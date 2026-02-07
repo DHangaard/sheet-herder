@@ -102,6 +102,10 @@ As a game master, I want to create and maintain campaign notes and session logs,
 **When** I create or update session logs<br>
 **Then** the logs are available for campaign participants to read<br>
 
+**Given** I am managing a campaign<br>
+**When** I create or update campaign notes<br>
+**Then** the notes are private and not accessible to campaign participants<br>
+
 ---
 
 ## US-10: View Detailed Character Data (Game Master)
