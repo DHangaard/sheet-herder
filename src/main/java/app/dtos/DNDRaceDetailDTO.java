@@ -23,8 +23,8 @@ public record DNDRaceDetailDTO(
         @JsonProperty("age")
         String ageDescription,
 
-        @JsonProperty("allignment")
-        String allignment,
+        @JsonProperty("alignment")
+        String alignment,
 
         @JsonProperty("size")
         String size,
@@ -40,10 +40,10 @@ public record DNDRaceDetailDTO(
         @JsonProperty("language_desc")
         String languageDescription,
 
-        @JsonProperty("languages")
+        @JsonProperty("traits")
         List<DNDTraitDTO> traits,
 
-        @JsonProperty("languages")
+        @JsonProperty("subraces")
         List<DNDSubraceDTO> subraces,
 
         @JsonProperty("url")
