@@ -1,0 +1,52 @@
+@baseURL = https://www.dnd5eapi.co/api/2014
+
+### GET all resource URLs
+GET {{baseURL}}
+
+### GET all races
+GET {{baseURL}}/races
+
+### GET race details (example HUMAN)
+GET {{baseURL}}/races/human
+
+### GET race details (example ELF - has subrace)
+GET {{baseURL}}/races/elf
+
+### GET all classes
+GET {{baseURL}}/classes
+
+### GET class details (example WIZARD)
+GET {{baseURL}}/classes/wizard
+
+### GET class details (example FIGHTER)
+GET {{baseURL}}/classes/fighter
+
+### GET all ability scores
+GET {{baseURL}}/ability-scores
+
+### GET ability score details (example STRENGTH)
+GET {{baseURL}}/ability-scores/str
+
+### GET all traits
+GET {{baseURL}}/traits
+
+### GET trait details (example DARKVISION)
+GET {{baseURL}}/traits/darkvision
+
+### GET all languages
+GET {{baseURL}}/languages
+
+### GET language details (example Elvish)
+GET {{baseURL}}/languages/elvish
+
+### GET all subraces
+GET {{baseURL}}/subraces
+
+### GET subrace details (example HIGH_ELF)
+GET {{baseURL}}/subraces/high-elf
+
+### GET all feats
+GET {{baseURL}}/feats
+
+### GET feat details (example GRAPPLER)
+GET {{baseURL}}/feats/grappler

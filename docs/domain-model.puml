@@ -1,0 +1,32 @@
+@startuml
+
+class Campaign
+{
+}
+
+class CampaignMembership
+{
+role : CampaignRole
+}
+
+class Character
+{
+}
+
+ENUM CampaignRole
+{
+GAME_MASTER
+PLAYER
+}
+
+class User
+{
+}
+
+User "1" --- "0..*" Character : has
+User "1" --- "0..*" CampaignMembership : participates as
+
+CampaignMembership "1..*" --- "1" Campaign : belongs to
+Character "0..*" --- "0..1" Campaign : participates in
+
+@enduml

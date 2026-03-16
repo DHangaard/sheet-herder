@@ -25,7 +25,7 @@ public final class HibernateConfig {
     private static Properties buildProps() {
         Properties props = HibernateBaseProperties.createBase();
 
-        // Teaching-friendly default - change to update in production
+        // TODO change to update in production
         props.put("hibernate.hbm2ddl.auto", "create");
 
         if (System.getenv("DEPLOYED") != null) {
