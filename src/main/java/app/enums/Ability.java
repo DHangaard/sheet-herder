@@ -1,6 +1,6 @@
 package app.enums;
 
-public enum AbilityScore
+public enum Ability
 {
     CHARISMA("CHA"),
     CONSTITUTION("CON"),
@@ -11,7 +11,7 @@ public enum AbilityScore
 
     private final String value;
 
-    AbilityScore(String value)
+    Ability(String value)
     {
         this.value = value;
     }
@@ -21,13 +21,13 @@ public enum AbilityScore
         return value;
     }
 
-    public static AbilityScore fromValue(String value)
+    public static Ability fromValue(String value)
     {
-        for (AbilityScore abilityScore : values())
+        for (Ability ability : values())
         {
-            if (abilityScore.value.equals(value))
+            if (ability.value.equals(value))
             {
-                return abilityScore;
+                return ability;
             }
         }
         throw new IllegalArgumentException("Unknown ability score value: " + value);
