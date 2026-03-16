@@ -3,7 +3,7 @@ package app.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -26,8 +26,8 @@ public class User
     @Column(nullable = false, unique = true)
     private String username;
 
-    private LocalDate createdAt;
-    private LocalDate updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     // Password will be added when authentication is implemented
 
@@ -40,18 +40,27 @@ public class User
     @PrePersist
     protected void onCreate()
     {
-        this.createdAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
-        this.email.toLowerCase().trim();
-        this.username.trim();
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.email = this.email.toLowerCase().trim();
+        this.username = normalizeName(this.username);
     }
 
     @PreUpdate
     protected void onUpdate()
     {
-        this.updatedAt = LocalDate.now();
-        this.email.toLowerCase().trim();
-        this.username.trim();
+        this.updatedAt = LocalDateTime.now();
+        this.email = this.email.toLowerCase().trim();
+        this.username = normalizeName(this.username);
+    }
+
+    private String normalizeName(String name)
+    {
+        if (name == null || name.isBlank())
+        {
+            throw new IllegalArgumentException("Username cannot be blank");
+        }
+        return name.trim();
     }
 }
 
