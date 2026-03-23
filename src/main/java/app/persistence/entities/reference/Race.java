@@ -1,4 +1,4 @@
-package app.entities.reference;
+package app.persistence.entities.reference;
 
 import app.enums.Ability;
 import app.enums.Size;
@@ -49,7 +49,7 @@ public class Race
 
     private String sizeDescription;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "race_languages",
             joinColumns = @JoinColumn(name = "race_id"),
@@ -60,7 +60,7 @@ public class Race
     @Column(columnDefinition = "TEXT") // TODO Rethink use of "TEXT"
     private String languageDescription;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "race_traits",
             joinColumns = @JoinColumn(name = "race_id"),
@@ -68,10 +68,13 @@ public class Race
     )
     private Set<Trait> traits;
 
+    @Column(nullable = false, length = 64)
+    private String contentHash;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Race(String name, int speed, Map<Ability, Integer> abilityBonuses, String ageDescription, String alignment, Size size, String sizeDescription, Set<Language> languages, String languageDescription, Set<Trait> traits)
+    public Race(String name, int speed, Map<Ability, Integer> abilityBonuses, String ageDescription, String alignment, Size size, String sizeDescription, Set<Language> languages, String languageDescription, Set<Trait> traits, String contentHash)
     {
         this.name = name;
         this.speed = speed;
@@ -83,6 +86,7 @@ public class Race
         this.languages = languages;
         this.languageDescription = languageDescription;
         this.traits = traits;
+        this.contentHash = contentHash;
     }
 
     @PrePersist
