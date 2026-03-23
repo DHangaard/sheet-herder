@@ -1,4 +1,4 @@
-package app.persistence;
+package app.persistence.daos.interfaces;
 
 import java.util.List;
 
