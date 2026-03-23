@@ -1,5 +1,6 @@
-package app.entities.reference;
+package app.persistence.entities.reference;
 
+import app.enums.LanguageType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +13,7 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-public class Trait
+public class Language
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,21 +24,35 @@ public class Trait
     @Column(nullable = false, unique = true)
     private String name;
 
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    private LanguageType type;
+
     @ElementCollection
     @CollectionTable(
-            name = "trait_descriptions",
-            joinColumns = @JoinColumn(name = "trait_id")
+            name = "language_typical_speakers",
+            joinColumns = @JoinColumn(name = "language_id")
     )
-    @Column(name = "description", columnDefinition = "TEXT") // TODO Rethink use of "TEXT"
-    private List<String> descriptions; // TODO Check for instances of multiple descriptions or refactor
+    @Column(name = "typical_speaker")
+    private List<String> typicalSpeakers;
+
+    private String script;
+
+    @Column(nullable = false, length = 64)
+    private String contentHash;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Trait(String name, List<String> descriptions)
+    public Language(String name, String description, LanguageType type, List<String> typicalSpeakers, String script, String contentHash)
     {
         this.name = name;
-        this.descriptions = descriptions;
+        this.description = description;
+        this.type = type;
+        this.typicalSpeakers = typicalSpeakers;
+        this.script = script;
+        this.contentHash = contentHash;
     }
 
     @PrePersist
