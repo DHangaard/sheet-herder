@@ -1,7 +1,9 @@
-package app.entities;
+package app.persistence.entities.domain;
 
-import app.entities.reference.*;
 import app.enums.Ability;
+import app.persistence.entities.reference.Language;
+import app.persistence.entities.reference.Race;
+import app.persistence.entities.reference.Subrace;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,10 +1,9 @@
-package app.entities.reference;
+package app.persistence.entities.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
@@ -12,7 +11,7 @@ import java.util.List;
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-public class Trait
+public class Campaign
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,25 +19,17 @@ public class Trait
     @EqualsAndHashCode.Include
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String name;
+    // private User gameMaster;
 
-    @ElementCollection
-    @CollectionTable(
-            name = "trait_descriptions",
-            joinColumns = @JoinColumn(name = "trait_id")
-    )
-    @Column(name = "description", columnDefinition = "TEXT") // TODO Rethink use of "TEXT"
-    private List<String> descriptions; // TODO Check for instances of multiple descriptions or refactor
+    // @Column(unique = true)
+    // private List<CharacterSheet> players;
+    // private Map<String, String> gameMasterNotes; // TODO Maybe another Key?
+    // private Map<String, String> sessionLogs; // TODO Maybe another Key?
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Trait(String name, List<String> descriptions)
-    {
-        this.name = name;
-        this.descriptions = descriptions;
-    }
+    // public Campaign(User gameMaster) { this.gameMaster = gameMaster; }
 
     @PrePersist
     protected void onCreate()

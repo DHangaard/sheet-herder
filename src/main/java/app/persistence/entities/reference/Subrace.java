@@ -1,4 +1,4 @@
-package app.entities.reference;
+package app.persistence.entities.reference;
 
 import app.enums.Ability;
 import jakarta.persistence.*;
@@ -28,7 +28,7 @@ public class Subrace
     @Column(columnDefinition = "TEXT") // TODO Rethink use of "TEXT"
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "race_id", nullable = false)
     private Race race;
 
@@ -42,7 +42,7 @@ public class Subrace
     @Column(name = "bonus")
     private Map<Ability, Integer> abilityBonuses;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "subrace_traits",
             joinColumns = @JoinColumn(name = "subrace_id"),
@@ -50,16 +50,20 @@ public class Subrace
     )
     private Set<Trait> traits;
 
+    @Column(nullable = false, length = 64)
+    private String contentHash;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Subrace(String name, String description, Race race, Map<Ability, Integer> abilityBonuses, Set<Trait> traits)
+    public Subrace(String name, String description, Race race, Map<Ability, Integer> abilityBonuses, Set<Trait> traits, String contentHash)
     {
         this.name = name;
         this.description = description;
         this.race = race;
         this.abilityBonuses = abilityBonuses;
         this.traits = traits;
+        this.contentHash = contentHash;
     }
 
     @PrePersist

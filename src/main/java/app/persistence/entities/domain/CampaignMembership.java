@@ -1,4 +1,4 @@
-package app.entities;
+package app.persistence.entities.domain;
 
 import app.enums.CampaignRole;
 import jakarta.persistence.*;
