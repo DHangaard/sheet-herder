@@ -5,11 +5,13 @@ import app.dtos.reference.RaceDTO;
 import app.dtos.reference.SubraceDTO;
 import app.dtos.reference.TraitDTO;
 import app.dtos.dnd.DNDAbilityBonusDTO;
+import app.persistence.entities.domain.User;
 import app.persistence.entities.reference.Language;
 import app.persistence.entities.reference.Race;
 import app.persistence.entities.reference.Subrace;
 import app.persistence.entities.reference.Trait;
 import app.enums.Ability;
+import app.security.dtos.UserDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -75,6 +77,14 @@ public class DTOMapper
                         bonus -> Ability.fromValue(bonus.dndAbilityScoreDTO().name()),
                         DNDAbilityBonusDTO::bonus
                 ));
+    }
+
+    public static UserDTO userToDTO(User user)
+    {
+        return new UserDTO(
+                user.getUsername(),
+                user.getRoles()
+        );
     }
 
     private static <T, R> Set<R> nullSafeSet(Set<T> source, Function<T, R> mapper)
