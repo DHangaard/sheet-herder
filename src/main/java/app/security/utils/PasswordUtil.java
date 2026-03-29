@@ -35,7 +35,7 @@ public final class PasswordUtil
     {
         if (isNullOrBlank(hashedPassword))
         {
-            return false;
+            return true;
         }
         String[] parts = hashedPassword.split("\\$");
         int cost = Integer.parseInt(parts[2]);
