@@ -21,14 +21,20 @@ import app.persistence.entities.reference.Trait;
 import app.integrations.DNDClient;
 import app.config.HibernateConfig;
 import app.integrations.IDNDClient;
+import app.security.dtos.UserDTO;
+import app.security.utils.JWTUtil;
 import app.services.reference.*;
 import app.utils.ExecutionTimer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.nimbusds.jose.JOSEException;
 import jakarta.persistence.EntityManagerFactory;
 
 import java.net.http.HttpClient;
+import java.text.ParseException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Main
 {
@@ -40,6 +46,22 @@ public class Main
     public static void main(String[] args)
     {
         ExecutionTimer.start();
+
+        UserDTO user = new UserDTO("John Admin", new HashSet<String>(Set.of("USER")));
+        try
+        {
+            String token = JWTUtil.createToken(user.username(), user.roles());
+            System.out.println(token);
+            System.out.println(JWTUtil.parseToken(token));
+        }
+        catch (JOSEException e)
+        {
+            throw new RuntimeException(e);
+        }
+        catch (ParseException e)
+        {
+            throw new RuntimeException(e);
+        }
 
         IDNDClient dndClient = new DNDClient(CLIENT, OBJECT_MAPPER);
         IDNDFetchingService dndFetchingService = new DNDFetchingService(dndClient);
