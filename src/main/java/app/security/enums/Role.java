@@ -1,4 +1,4 @@
-package app.enums;
+package app.security.enums;
 
 import io.javalin.security.RouteRole;
 
