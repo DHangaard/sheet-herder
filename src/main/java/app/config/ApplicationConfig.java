@@ -7,8 +7,8 @@ public class ApplicationConfig
 {
     public static Javalin startServer(int port)
     {
-        ApplicationContext applicationContext = ApplicationContext.getInstance();
-        Routes routes = buildRoutes(applicationContext);
+        DIContainer diContainer = DIContainer.getInstance();
+        Routes routes = buildRoutes(diContainer);
 
         Javalin app = Javalin.create(config ->
         {
@@ -34,13 +34,13 @@ public class ApplicationConfig
         app.stop();
     }
 
-    private static Routes buildRoutes(ApplicationContext applicationContext)
+    private static Routes buildRoutes(DIContainer diContainer)
     {
         return new Routes(
-                new LanguageRoute(applicationContext.getLanguageController()),
-                new TraitRoute(applicationContext.getTraitController()),
-                new RaceRoute(applicationContext.getRaceController()),
-                new SubraceRoute(applicationContext.getSubraceController())
+                new LanguageRoute(diContainer.getLanguageController()),
+                new TraitRoute(diContainer.getTraitController()),
+                new RaceRoute(diContainer.getRaceController()),
+                new SubraceRoute(diContainer.getSubraceController())
         );
     }
 
