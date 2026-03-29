@@ -28,9 +28,9 @@ import lombok.Getter;
 
 import java.net.http.HttpClient;
 
-public final class ApplicationContext
+public final class DIContainer
 {
-    private static ApplicationContext instance;
+    private static DIContainer instance;
     private final EntityManagerFactory entityManagerFactory;
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
@@ -61,7 +61,7 @@ public final class ApplicationContext
     private final IReferenceController subraceController;
 
 
-    public ApplicationContext(EntityManagerFactory entityManagerFactory)
+    public DIContainer(EntityManagerFactory entityManagerFactory)
     {
         this.entityManagerFactory = entityManagerFactory;
 
@@ -87,18 +87,18 @@ public final class ApplicationContext
         this.subraceController = new SubraceController(subraceService);
     }
 
-    public static ApplicationContext getInstance()
+    public static DIContainer getInstance()
     {
         if (instance == null)
         {
-            instance = new ApplicationContext(HibernateConfig.getEntityManagerFactory());
+            instance = new DIContainer(HibernateConfig.getEntityManagerFactory());
         }
         return instance;
     }
 
-    public static ApplicationContext getTestInstance(EntityManagerFactory entityManagerFactory)
+    public static DIContainer getTestInstance(EntityManagerFactory entityManagerFactory)
     {
-        instance = new ApplicationContext(entityManagerFactory);
+        instance = new DIContainer(entityManagerFactory);
         return instance;
     }
 }
