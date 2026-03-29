@@ -26,6 +26,9 @@
         <!-- Security -->
         <jbcrypt.version>0.4</jbcrypt.version>
 
+        <!-- JSON Web Token -->
+        <nimbusds.version>10.0.2</nimbusds.version>
+
         <!-- Lombok -->
         <lombok.version>1.18.42</lombok.version>
 
@@ -85,6 +88,13 @@
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
             <version>${jbcrypt.version}</version>
+        </dependency>
+
+        <!-- ===== JSON WEB TOKEN ===== -->
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>${nimbusds.version}</version>
         </dependency>
 
         <!-- ===== LOMBOK ===== -->
