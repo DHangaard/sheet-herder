@@ -53,13 +53,6 @@ public class SecurityService implements ISecurityService
             throw new UnauthorizedException("Invalid credentials");
         }
 
-        try
-        {
-            return JWTUtil.createToken(user.getUsername(), user.getRoles());
-        }
-        catch (JOSEException e)
-        {
-            throw new TokenCreationException("Failed to create token", e);
-        }
+        return JWTUtil.createToken(user.getUsername(), user.getRoles());
     }
 }
