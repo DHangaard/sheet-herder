@@ -1,5 +1,6 @@
 package app.persistence.daos.implementations;
 
+import app.exceptions.NotFoundException;
 import app.persistence.daos.interfaces.IReferenceDAO;
 import app.persistence.entities.reference.Race;
 import app.exceptions.DatabaseException;
@@ -34,7 +35,7 @@ public class RaceDAO implements IReferenceDAO<Race>
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to save race: " + e.getMessage());
+                throw new DatabaseException("Failed to persist race", e);
             }
         }
     }
@@ -44,7 +45,7 @@ public class RaceDAO implements IReferenceDAO<Race>
     {
         try (EntityManager em = emf.createEntityManager())
         {
-            Race foundRace = em.createQuery("""
+            return em.createQuery("""
                             SELECT r
                             FROM Race r
                             LEFT JOIN FETCH r.languages
@@ -54,13 +55,11 @@ public class RaceDAO implements IReferenceDAO<Race>
                     .setParameter("id", id)
                     .getResultStream()
                     .findFirst()
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Race with id " + id + " was not found"));
-            return foundRace;
+                    .orElseThrow(() -> new EntityNotFoundException("Race with id " + id + " was not found"));
         }
         catch (PersistenceException e)
         {
-            throw new DatabaseException("Failed to find race with name: " + id + e.getMessage());
+            throw new DatabaseException("Failed to find race with name: " + id, e);
         }
     }
 
@@ -81,7 +80,7 @@ public class RaceDAO implements IReferenceDAO<Race>
             }
             catch (PersistenceException e)
             {
-                throw new DatabaseException("Failed to fetch races: " + e.getMessage());
+                throw new DatabaseException("Failed to fetch races", e);
             }
         }
     }
@@ -101,7 +100,7 @@ public class RaceDAO implements IReferenceDAO<Race>
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to update race: " + e.getMessage());
+                throw new DatabaseException("Failed to update race", e);
             }
         }
     }
@@ -115,7 +114,7 @@ public class RaceDAO implements IReferenceDAO<Race>
             Race foundRace = em.find(Race.class, id);
             if (foundRace == null)
             {
-                throw new DatabaseException("Race not found - id: " + id);
+                throw new NotFoundException("Race not found - id: " + id);
             }
             try
             {
@@ -126,7 +125,7 @@ public class RaceDAO implements IReferenceDAO<Race>
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to delete race with id: " + id + " " + e.getMessage());
+                throw new DatabaseException("Failed to delete race with id: " + id, e);
             }
         }
     }
@@ -136,7 +135,7 @@ public class RaceDAO implements IReferenceDAO<Race>
     {
         try (EntityManager em = emf.createEntityManager())
         {
-            Race foundRace = em.createQuery("""
+            return em.createQuery("""
                             SELECT r
                             FROM Race r
                             LEFT JOIN FETCH r.languages
@@ -145,13 +144,11 @@ public class RaceDAO implements IReferenceDAO<Race>
                     .setParameter("name", name)
                     .getResultStream()
                     .findFirst()
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Race with name \"" + name + "\" was not found"));
-            return foundRace;
+                    .orElseThrow(() -> new EntityNotFoundException("Race with name \"" + name + "\" was not found"));
         }
         catch (PersistenceException e)
         {
-            throw new DatabaseException("Failed to find race with name: \"" + name + "\"" + e.getMessage());
+            throw new DatabaseException("Failed to find race with name: \"" + name + "\"", e);
         }
     }
 
@@ -180,7 +177,7 @@ public class RaceDAO implements IReferenceDAO<Race>
             }
             catch (PersistenceException e)
             {
-                throw new DatabaseException("Failed to fetch races by names: " + e.getMessage());
+                throw new DatabaseException("Failed to fetch races by names", e);
             }
         }
     }
@@ -201,7 +198,7 @@ public class RaceDAO implements IReferenceDAO<Race>
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to synchronise races: " + e.getMessage());
+                throw new DatabaseException("Failed to synchronise races", e);
             }
         }
     }

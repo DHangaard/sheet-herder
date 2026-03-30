@@ -1,5 +1,6 @@
 package app.persistence.daos.implementations;
 
+import app.exceptions.NotFoundException;
 import app.persistence.daos.interfaces.IReferenceDAO;
 import app.persistence.entities.reference.Trait;
 import app.exceptions.DatabaseException;
@@ -34,7 +35,7 @@ public class TraitDAO implements IReferenceDAO<Trait>
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to save trait: " + e.getMessage());
+                throw new DatabaseException("Failed to persist trait", e);
             }
         }
     }
@@ -47,13 +48,13 @@ public class TraitDAO implements IReferenceDAO<Trait>
             Trait foundTrait = em.find(Trait.class, id);
             if (foundTrait == null)
             {
-                throw new DatabaseException("Trait not found - id: " + id);
+                throw new NotFoundException("Trait not found - id: " + id);
             }
             return foundTrait;
         }
         catch (PersistenceException e)
         {
-            throw new DatabaseException("Failed to find Trait with id: " + id + " " + e.getMessage());
+            throw new DatabaseException("Failed to find Trait with id: " + id, e);
         }
     }
 
@@ -69,7 +70,7 @@ public class TraitDAO implements IReferenceDAO<Trait>
             }
             catch (PersistenceException e)
             {
-                throw new DatabaseException("Failed to fetch traits: " + e.getMessage());
+                throw new DatabaseException("Failed to fetch traits", e);
             }
         }
     }
@@ -89,7 +90,7 @@ public class TraitDAO implements IReferenceDAO<Trait>
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to update trait: " + e.getMessage());
+                throw new DatabaseException("Failed to update trait", e);
             }
         }
     }
@@ -103,7 +104,7 @@ public class TraitDAO implements IReferenceDAO<Trait>
             Trait foundTrait = em.find(Trait.class, id);
             if (foundTrait == null)
             {
-                throw new DatabaseException("Trait not found - id: " + id);
+                throw new NotFoundException("Trait not found - id: " + id);
             }
             try
             {
@@ -114,7 +115,7 @@ public class TraitDAO implements IReferenceDAO<Trait>
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to delete trait with id: " + id + " " + e.getMessage());
+                throw new DatabaseException("Failed to delete trait with id: " + id, e);
             }
         }
     }
@@ -124,7 +125,7 @@ public class TraitDAO implements IReferenceDAO<Trait>
     {
         try (EntityManager em = emf.createEntityManager())
         {
-            Trait foundTrait = em.createQuery("""
+            return em.createQuery("""
                             SELECT t
                             FROM Trait t
                             WHERE LOWER(t.name) = LOWER(:name)
@@ -132,13 +133,11 @@ public class TraitDAO implements IReferenceDAO<Trait>
                     .setParameter("name", name)
                     .getResultStream()
                     .findFirst()
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Trait with name \"" + name + "\" was not found"));
-            return foundTrait;
+                    .orElseThrow(() -> new EntityNotFoundException("Trait with name \"" + name + "\" was not found"));
         }
         catch (PersistenceException e)
         {
-            throw new DatabaseException("Failed to find trait with name: \"" + name + "\"" + e.getMessage());
+            throw new DatabaseException("Failed to find trait with name: \"" + name + "\"", e);
         }
     }
 
@@ -165,7 +164,7 @@ public class TraitDAO implements IReferenceDAO<Trait>
             }
             catch (PersistenceException e)
             {
-                throw new DatabaseException("Failed to fetch traits by names: " + e.getMessage());
+                throw new DatabaseException("Failed to fetch traits by names", e);
             }
         }
     }
@@ -186,7 +185,7 @@ public class TraitDAO implements IReferenceDAO<Trait>
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to synchronise traits: " + e.getMessage());
+                throw new DatabaseException("Failed to synchronise traits", e);
             }
         }
     }

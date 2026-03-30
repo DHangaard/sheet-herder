@@ -1,5 +1,6 @@
 package app.persistence.daos.implementations;
 
+import app.exceptions.NotFoundException;
 import app.persistence.entities.domain.User;
 import app.exceptions.DatabaseException;
 import app.persistence.daos.interfaces.IDAO;
@@ -34,7 +35,7 @@ public class UserDAO implements IDAO<User>
                 {
                     em.getTransaction().rollback();
                 }
-                throw new DatabaseException("Failed to save user: " + e.getMessage());
+                throw new DatabaseException("Failed to persist user", e);
             }
         }
     }
@@ -47,13 +48,13 @@ public class UserDAO implements IDAO<User>
             User foundUser = em.find(User.class, id);
             if (foundUser == null)
             {
-                throw new DatabaseException("User not found - id: " + id);
+                throw new NotFoundException("User not found - id: " + id);
             }
             return foundUser;
         }
         catch (PersistenceException e)
         {
-            throw new DatabaseException("Failed to find user with id: " + id + " " + e.getMessage());
+            throw new DatabaseException("Failed to find user with id: " + id, e);
         }
     }
 
@@ -69,7 +70,7 @@ public class UserDAO implements IDAO<User>
             }
             catch (PersistenceException e)
             {
-                throw new DatabaseException("Failed to fetch users: " + e.getMessage());
+                throw new DatabaseException("Failed to fetch users", e);
             }
         }
     }
@@ -92,7 +93,7 @@ public class UserDAO implements IDAO<User>
                 {
                     em.getTransaction().rollback();
                 }
-                throw new DatabaseException("Failed to update user: " + e.getMessage());
+                throw new DatabaseException("Failed to update user", e);
             }
         }
     }
@@ -106,7 +107,7 @@ public class UserDAO implements IDAO<User>
             User foundUser = em.find(User.class, id);
             if (foundUser == null)
             {
-                throw new DatabaseException("User not found - id: " + id);
+                throw new NotFoundException("User not found - id: " + id);
             }
             try
             {
@@ -120,7 +121,7 @@ public class UserDAO implements IDAO<User>
                 {
                     em.getTransaction().rollback();
                 }
-                throw new DatabaseException("Failed to delete user with id: " + id + " " + e.getMessage());
+                throw new DatabaseException("Failed to delete user with id: " + id, e);
             }
         }
     }

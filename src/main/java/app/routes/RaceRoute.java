@@ -1,6 +1,7 @@
 package app.routes;
 
 import app.controllers.IReferenceController;
+import app.security.enums.Role;
 import io.javalin.apibuilder.EndpointGroup;
 
 import static io.javalin.apibuilder.ApiBuilder.path;
@@ -21,9 +22,9 @@ public class RaceRoute
         {
             path("/races", () ->
             {
-                get(raceController::getAll);
-                get("/id/{id}", raceController::getById);
-                get("/name/{name}", raceController::getByName);
+                get(raceController::getAll, Role.ANYONE);
+                get("/id/{id}", raceController::getById, Role.ANYONE);
+                get("/name/{name}", raceController::getByName, Role.ANYONE);
             });
         };
     }

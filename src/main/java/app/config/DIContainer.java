@@ -1,5 +1,6 @@
 package app.config;
 
+import app.config.hibernate.HibernateConfig;
 import app.controllers.*;
 import app.dtos.dnd.DNDLanguageDetailDTO;
 import app.dtos.dnd.DNDRaceDetailDTO;
@@ -20,6 +21,12 @@ import app.persistence.entities.reference.Language;
 import app.persistence.entities.reference.Race;
 import app.persistence.entities.reference.Subrace;
 import app.persistence.entities.reference.Trait;
+import app.security.controllers.ISecurityController;
+import app.security.controllers.SecurityController;
+import app.security.daos.IUserDAO;
+import app.security.daos.UserDAO;
+import app.security.services.ISecurityService;
+import app.security.services.SecurityService;
 import app.services.reference.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -28,14 +35,16 @@ import lombok.Getter;
 
 import java.net.http.HttpClient;
 
-public final class ApplicationContext
+public final class DIContainer
 {
-    private static ApplicationContext instance;
+    private static DIContainer instance;
     private final EntityManagerFactory entityManagerFactory;
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
     private final IDNDClient dndClient;
+
+    @Getter
     private final IDNDFetchingService dndFetchingService;
 
     private final IReferenceDAO<Language> languageDAO;
@@ -43,25 +52,34 @@ public final class ApplicationContext
     private final IReferenceDAO<Race> raceDAO;
     private final IReferenceDAO<Subrace> subraceDAO;
 
+    private final IUserDAO userDAO;
+
+    @Getter
     private final IReferenceDataService<DNDLanguageDetailDTO, LanguageDTO> languageService;
+    @Getter
     private final IReferenceDataService<DNDTraitDetailDTO, TraitDTO> traitService;
+    @Getter
     private final IReferenceDataService<DNDRaceDetailDTO, RaceDTO> raceService;
+    @Getter
     private final IReferenceDataService<DNDSubraceDetailDTO, SubraceDTO> subraceService;
 
     @Getter
-    private final IReferenceController languageController;
+    private final ISecurityService securityService;
 
+    @Getter
+    private final IReferenceController languageController;
     @Getter
     private final IReferenceController traitController;
-
     @Getter
     private final IReferenceController raceController;
-
     @Getter
     private final IReferenceController subraceController;
 
+    @Getter
+    private final ISecurityController securityController;
 
-    public ApplicationContext(EntityManagerFactory entityManagerFactory)
+
+    public DIContainer(EntityManagerFactory entityManagerFactory)
     {
         this.entityManagerFactory = entityManagerFactory;
 
@@ -76,29 +94,35 @@ public final class ApplicationContext
         this.raceDAO = new RaceDAO(entityManagerFactory);
         this.subraceDAO = new SubraceDAO(entityManagerFactory);
 
+        this.userDAO = new UserDAO(entityManagerFactory);
+
         this.languageService = new LanguageService(languageDAO);
         this.traitService = new TraitService(traitDAO);
         this.raceService = new RaceService(raceDAO, languageDAO, traitDAO);
         this.subraceService = new SubraceService(subraceDAO, raceDAO, traitDAO);
 
+        this.securityService = new SecurityService(userDAO);
+
         this.languageController = new LanguageController(languageService);
         this.traitController = new TraitController(traitService);
         this.raceController = new RaceController(raceService);
         this.subraceController = new SubraceController(subraceService);
+
+        this.securityController = new SecurityController(securityService);
     }
 
-    public static ApplicationContext getInstance()
+    public static DIContainer getInstance()
     {
         if (instance == null)
         {
-            instance = new ApplicationContext(HibernateConfig.getEntityManagerFactory());
+            instance = new DIContainer(HibernateConfig.getEntityManagerFactory());
         }
         return instance;
     }
 
-    public static ApplicationContext getTestInstance(EntityManagerFactory entityManagerFactory)
+    public static DIContainer getTestInstance(EntityManagerFactory entityManagerFactory)
     {
-        instance = new ApplicationContext(entityManagerFactory);
+        instance = new DIContainer(entityManagerFactory);
         return instance;
     }
 }
