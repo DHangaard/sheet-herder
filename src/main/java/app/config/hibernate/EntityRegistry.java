@@ -1,4 +1,4 @@
-package app.config;
+package app.config.hibernate;
 
 import app.persistence.entities.domain.Campaign;
 import app.persistence.entities.domain.CampaignMembership;
