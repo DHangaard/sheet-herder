@@ -35,7 +35,7 @@ public class UserDAO implements IUserDAO
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to save user: " + e.getMessage());
+                throw new DatabaseException("Failed to persist user", e);
             }
         }
     }
@@ -56,7 +56,7 @@ public class UserDAO implements IUserDAO
         }
         catch (PersistenceException e)
         {
-            throw new DatabaseException("Failed to find user with email: " + email + " " + e.getMessage());
+            throw new DatabaseException("Failed to find user with email: " + email, e);
         }
     }
 
@@ -71,7 +71,7 @@ public class UserDAO implements IUserDAO
         }
         catch (PersistenceException e)
         {
-            throw new DatabaseException("Failed to find user with id: " + id + " " + e.getMessage());
+            throw new DatabaseException("Failed to find user with id: " + id, e);
         }
     }
 
@@ -90,7 +90,7 @@ public class UserDAO implements IUserDAO
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to update user: " + e.getMessage());
+                throw new DatabaseException("Failed to update user", e);
             }
         }
     }
@@ -117,7 +117,7 @@ public class UserDAO implements IUserDAO
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to add role \"" + role + "\" user: " + e.getMessage());
+                throw new DatabaseException("Failed to add role \"" + role + "\" user: " + id, e);
             }
         }
     }
@@ -144,7 +144,7 @@ public class UserDAO implements IUserDAO
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to remove role \"" + role + "\" user: " + e.getMessage());
+                throw new DatabaseException("Failed to remove role \"" + role + "\" user", e);
             }
         }
     }
@@ -166,7 +166,7 @@ public class UserDAO implements IUserDAO
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to delete user with id: " + id + " " + e.getMessage());
+                throw new DatabaseException("Failed to delete user with id: " + id, e);
             }
         }
     }

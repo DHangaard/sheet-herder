@@ -25,7 +25,7 @@ public final class ApplicationProperties
         }
         catch (IOException e)
         {
-            throw new PropertyException("Error when reading config.properties: " + e.getMessage());
+            throw new PropertyException("Error when reading config.properties", e);
         }
     }
 

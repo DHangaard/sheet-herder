@@ -1,5 +1,7 @@
 package app.security.utils;
 
+import app.exceptions.TokenCreationException;
+import app.exceptions.TokenVerificationException;
 import app.security.dtos.UserDTO;
 import app.security.enums.Role;
 import com.nimbusds.jose.*;
@@ -35,41 +37,60 @@ public class JWTUtil {
 
     private JWTUtil() {}
 
-    public static String createToken(String username, Set<Role> roles) throws JOSEException {
-        JWTClaimsSet claims = new JWTClaimsSet.Builder()
-                .subject(username)
-                .issuer(ISSUER)
-                .issueTime(new Date())
-                .claim("roles", roles.stream()
-                        .map(Role::name)
-                        .collect(Collectors.toList()))
-                .expirationTime(new Date(System.currentTimeMillis() + EXPIRY))
-                .build();
+    public static String createToken(String username, Set<Role> roles) throws TokenCreationException
+    {
+        try
+        {
+            JWTClaimsSet claims = new JWTClaimsSet.Builder()
+                    .subject(username)
+                    .issuer(ISSUER)
+                    .issueTime(new Date())
+                    .claim("roles", roles.stream()
+                            .map(Role::name)
+                            .collect(Collectors.toList()))
+                    .expirationTime(new Date(System.currentTimeMillis() + EXPIRY))
+                    .build();
 
-        SignedJWT jwt = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claims);
-        jwt.sign(SIGNER);
-
-        return jwt.serialize();
+            SignedJWT jwt = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claims);
+            jwt.sign(SIGNER);
+            return jwt.serialize();
+        }
+        catch (JOSEException e)
+        {
+            throw new TokenCreationException("Could not create token", e);
+        }
     }
 
-    public static UserDTO parseToken(String token) throws ParseException, JOSEException {
-        SignedJWT jwt = SignedJWT.parse(token);
-        if (!jwt.verify(VERIFIER))
+    public static UserDTO parseToken(String token) throws TokenVerificationException
+    {
+        try
         {
-            throw new JOSEException("Invalid token signature");
-        }
+            SignedJWT jwt = SignedJWT.parse(token);
+            if (!jwt.verify(VERIFIER))
+            {
+                throw new TokenVerificationException("Invalid token signature");
+            }
 
-        JWTClaimsSet claims = jwt.getJWTClaimsSet();
-        if (claims.getExpirationTime().before(new Date()))
+            JWTClaimsSet claims = jwt.getJWTClaimsSet();
+            if (claims.getExpirationTime().before(new Date()))
+            {
+                throw new TokenVerificationException("Token expired");
+            }
+
+            Set<Role> roles = new HashSet<>(claims.getStringListClaim("roles"))
+                    .stream()
+                    .map(Role::valueOf)
+                    .collect(Collectors.toSet());
+
+            return new UserDTO(claims.getSubject(), roles);
+        }
+        catch (TokenVerificationException e)
         {
-            throw new JOSEException("Token expired");
+            throw e;
         }
-
-        Set<Role> roles = new HashSet<>(claims.getStringListClaim("roles"))
-                .stream()
-                .map(Role::valueOf)
-                .collect(Collectors.toSet());
-
-        return new UserDTO(claims.getSubject(), roles);
+        catch (ParseException | JOSEException e)
+        {
+            throw new TokenVerificationException("Invalid token", e);
+        }
     }
 }

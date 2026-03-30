@@ -1,7 +1,7 @@
 package app.integrations;
 
 import app.dtos.dnd.*;
-import app.exceptions.ApiException;
+import app.exceptions.ExternalApiException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -154,7 +154,7 @@ public class DNDClient implements IDNDClient
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         if (response.statusCode() != 200)
         {
-            throw new ApiException(response.statusCode(), "DnD5Eapi returned error code: " + response.statusCode());
+            throw new ExternalApiException(response.statusCode(), "DnD5Eapi returned error code: " + response.statusCode());
         }
         return response.body();
     }

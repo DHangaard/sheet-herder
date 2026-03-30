@@ -1,5 +1,6 @@
 package app.persistence.daos.implementations;
 
+import app.exceptions.NotFoundException;
 import app.persistence.daos.interfaces.IReferenceDAO;
 import app.persistence.entities.reference.Race;
 import app.persistence.entities.reference.Subrace;
@@ -36,7 +37,7 @@ public class SubraceDAO implements IReferenceDAO<Subrace>
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to save subrace: " + e.getMessage());
+                throw new DatabaseException("Failed to persist subrace", e);
             }
         }
     }
@@ -46,7 +47,7 @@ public class SubraceDAO implements IReferenceDAO<Subrace>
     {
         try (EntityManager em = emf.createEntityManager())
         {
-            Subrace foundSubrace = em.createQuery("""
+            return em.createQuery("""
                             SELECT s
                             FROM Subrace s
                             LEFT JOIN FETCH s.race r
@@ -58,13 +59,11 @@ public class SubraceDAO implements IReferenceDAO<Subrace>
                     .setParameter("id", id)
                     .getResultStream()
                     .findFirst()
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Subrace with id " + id + " was not found"));
-            return foundSubrace;
+                    .orElseThrow(() -> new EntityNotFoundException("Subrace with id " + id + " was not found"));
         }
         catch (PersistenceException e)
         {
-            throw new DatabaseException("Failed to find Subrace with id: " + id + " " + e.getMessage());
+            throw new DatabaseException("Failed to find Subrace with id: " + id, e);
         }
     }
 
@@ -87,7 +86,7 @@ public class SubraceDAO implements IReferenceDAO<Subrace>
             }
             catch (PersistenceException e)
             {
-                throw new DatabaseException("Failed to fetch subraces: " + e.getMessage());
+                throw new DatabaseException("Failed to fetch subraces", e);
             }
         }
     }
@@ -107,7 +106,7 @@ public class SubraceDAO implements IReferenceDAO<Subrace>
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to update subrace: " + e.getMessage());
+                throw new DatabaseException("Failed to update subrace", e);
             }
         }
     }
@@ -121,7 +120,7 @@ public class SubraceDAO implements IReferenceDAO<Subrace>
             Subrace foundSubrace = em.find(Subrace.class, id);
             if (foundSubrace == null)
             {
-                throw new DatabaseException("Subrace not found - id: " + id);
+                throw new NotFoundException("Subrace not found - id: " + id);
             }
             try
             {
@@ -132,7 +131,7 @@ public class SubraceDAO implements IReferenceDAO<Subrace>
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to delete subrace with id: " + id + " " + e.getMessage());
+                throw new DatabaseException("Failed to delete subrace with id", e);
             }
         }
     }
@@ -142,7 +141,7 @@ public class SubraceDAO implements IReferenceDAO<Subrace>
     {
         try (EntityManager em = emf.createEntityManager())
         {
-            Subrace foundSubrace = em.createQuery("""
+            return em.createQuery("""
                             SELECT s
                             FROM Subrace s
                             LEFT JOIN FETCH s.race r
@@ -154,13 +153,11 @@ public class SubraceDAO implements IReferenceDAO<Subrace>
                     .setParameter("name", name)
                     .getResultStream()
                     .findFirst()
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Subrace with name \"" + name + "\" was not found"));
-            return foundSubrace;
+                    .orElseThrow(() -> new EntityNotFoundException("Subrace with name \"" + name + "\" was not found"));
         }
         catch (PersistenceException e)
         {
-            throw new DatabaseException("Failed to find subrace with name: \"" + name + "\"" + e.getMessage());
+            throw new DatabaseException("Failed to find subrace with name: \"" + name + "\"", e);
         }
     }
 
@@ -191,7 +188,7 @@ public class SubraceDAO implements IReferenceDAO<Subrace>
             }
             catch (PersistenceException e)
             {
-                throw new DatabaseException("Failed to fetch subraces by names: " + e.getMessage());
+                throw new DatabaseException("Failed to fetch subraces by names", e);
             }
         }
     }
@@ -212,7 +209,7 @@ public class SubraceDAO implements IReferenceDAO<Subrace>
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to synchronise subraces: " + e.getMessage());
+                throw new DatabaseException("Failed to synchronise subraces", e);
             }
         }
     }

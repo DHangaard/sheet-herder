@@ -1,5 +1,6 @@
 package app.persistence.daos.implementations;
 
+import app.exceptions.NotFoundException;
 import app.persistence.daos.interfaces.IReferenceDAO;
 import app.persistence.entities.reference.Language;
 import app.exceptions.DatabaseException;
@@ -34,7 +35,7 @@ public class LanguageDAO implements IReferenceDAO<Language>
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to save language: " + e.getMessage());
+                throw new DatabaseException("Failed to persist language", e);
             }
         }
     }
@@ -47,13 +48,13 @@ public class LanguageDAO implements IReferenceDAO<Language>
             Language foundLanguage = em.find(Language.class, id);
             if (foundLanguage == null)
             {
-                throw new DatabaseException("Language not found - id: " + id);
+                throw new NotFoundException("Language not found - id: " + id);
             }
             return foundLanguage;
         }
         catch (PersistenceException e)
         {
-            throw new DatabaseException("Failed to find Language with id: " + id + " " + e.getMessage());
+            throw new DatabaseException("Failed to find Language with id: " + id, e);
         }
     }
 
@@ -72,7 +73,7 @@ public class LanguageDAO implements IReferenceDAO<Language>
             }
             catch (PersistenceException e)
             {
-                throw new DatabaseException("Failed to fetch languages: " + e.getMessage());
+                throw new DatabaseException("Failed to fetch languages", e);
             }
         }
     }
@@ -92,7 +93,7 @@ public class LanguageDAO implements IReferenceDAO<Language>
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to update language: " + e.getMessage());
+                throw new DatabaseException("Failed to update language", e);
             }
         }
     }
@@ -106,7 +107,7 @@ public class LanguageDAO implements IReferenceDAO<Language>
             Language foundLanguage = em.find(Language.class, id);
             if (foundLanguage == null)
             {
-                throw new DatabaseException("Language not found - id: " + id);
+                throw new NotFoundException("Language not found - id: " + id);
             }
             try
             {
@@ -117,7 +118,7 @@ public class LanguageDAO implements IReferenceDAO<Language>
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to delete language with id: " + id + " " + e.getMessage());
+                throw new DatabaseException("Failed to delete language with id: " + id, e);
             }
         }
     }
@@ -127,7 +128,7 @@ public class LanguageDAO implements IReferenceDAO<Language>
     {
         try (EntityManager em = emf.createEntityManager())
         {
-            Language foundLanguage = em.createQuery("""
+            return em.createQuery("""
                             SELECT l
                             FROM Language l
                             WHERE LOWER(l.name) = LOWER(:name)
@@ -135,13 +136,11 @@ public class LanguageDAO implements IReferenceDAO<Language>
                     .setParameter("name", name)
                     .getResultStream()
                     .findFirst()
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Language with name \"" + name + "\" was not found"));
-            return foundLanguage;
+                    .orElseThrow(() -> new EntityNotFoundException("Language with name \"" + name + "\" was not found"));
         }
         catch (PersistenceException e)
         {
-            throw new DatabaseException("Failed to find language with name: \"" + name + "\"" + e.getMessage());
+            throw new DatabaseException("Failed to find language with name: \"" + name + "\"", e);
         }
     }
 
@@ -168,7 +167,7 @@ public class LanguageDAO implements IReferenceDAO<Language>
             }
             catch (PersistenceException e)
             {
-                throw new DatabaseException("Failed to fetch languages by names: " + e.getMessage());
+                throw new DatabaseException("Failed to fetch languages by names", e);
             }
         }
     }
@@ -189,7 +188,7 @@ public class LanguageDAO implements IReferenceDAO<Language>
             catch (PersistenceException e)
             {
                 rollback(em);
-                throw new DatabaseException("Failed to synchronise languages: " + e.getMessage());
+                throw new DatabaseException("Failed to synchronise languages", e);
             }
         }
     }
