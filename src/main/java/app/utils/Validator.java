@@ -1,6 +1,6 @@
 package app.utils;
 
-import app.security.exceptions.ValidationException;
+import app.exceptions.ValidationException;
 
 import java.util.List;
 
