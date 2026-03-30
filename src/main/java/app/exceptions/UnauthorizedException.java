@@ -8,4 +8,9 @@ public class UnauthorizedException extends ApiException
     {
         super(HttpStatus.UNAUTHORIZED.getCode(), message);
     }
+
+    public UnauthorizedException(String message, Throwable cause)
+    {
+        super(HttpStatus.UNAUTHORIZED.getCode(), message, cause);
+    }
 }

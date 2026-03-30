@@ -8,4 +8,9 @@ public class ConflictException extends ApiException
     {
         super(HttpStatus.CONFLICT.getCode(), message);
     }
+
+    public ConflictException(String message, Throwable cause)
+    {
+        super(HttpStatus.CONFLICT.getCode(), message, cause);
+    }
 }

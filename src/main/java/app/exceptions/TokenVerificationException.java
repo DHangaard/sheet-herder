@@ -1,7 +1,10 @@
 package app.exceptions;
 
-public class TokenVerificationException extends Exception
-{
+public class TokenVerificationException extends Exception {
+    public TokenVerificationException(String message)
+    {
+        super(message);
+    }
 
     public TokenVerificationException(String message, Throwable cause)
     {

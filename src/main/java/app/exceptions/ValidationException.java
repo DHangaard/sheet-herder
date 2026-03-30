@@ -1,6 +1,5 @@
-package app.security.exceptions;
+package app.exceptions;
 
-import app.exceptions.ApiException;
 import io.javalin.http.HttpStatus;
 
 public class ValidationException extends ApiException
