@@ -50,7 +50,7 @@ public class SecurityController implements ISecurityController
             return;
         }
 
-        // Endpoint unprotected or open to ANYONE
+        // Endpoint open to ANYONE
         if (isOpenEndpoint(ctx))
         {
             return;
@@ -71,7 +71,7 @@ public class SecurityController implements ISecurityController
     @Override
     public void authorize(Context ctx)
     {
-        // Endpoint unprotected or open to ANYONE
+        // Endpoint open to ANYONE
         if (isOpenEndpoint(ctx))
         {
             return;
@@ -88,7 +88,7 @@ public class SecurityController implements ISecurityController
                 .map(role -> role.toString().toUpperCase())
                 .collect(Collectors.toSet());
 
-        return allowedRoles.isEmpty() || allowedRoles.contains("ANYONE");
+        return allowedRoles.contains("ANYONE");
     }
 
     private String extractToken(Context ctx)
