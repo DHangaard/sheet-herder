@@ -2,9 +2,10 @@ package app.services.reference;
 
 import app.dtos.dnd.*;
 import app.integrations.IDNDClient;
+import app.utils.ThreadUtil;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 public class DNDFetchingService implements IDNDFetchingService
 {
@@ -49,55 +50,59 @@ public class DNDFetchingService implements IDNDFetchingService
     public List<DNDRaceDetailDTO> fetchAllRacesWithDetails()
     {
         DNDRaceResultDTO resultDTO = dndClient.fetchAllRaces(ALL_RACES_URL);
-        List<DNDRaceDetailDTO> detailDTOs = new ArrayList<>();
 
-        resultDTO.races().forEach(race ->
-        {
-            String url = String.format(BASE_URL, race.url());
-            detailDTOs.add(dndClient.fetchRaceDetails(url));
-        });
-        return detailDTOs;
+        List<Callable<DNDRaceDetailDTO>> tasks = resultDTO.races().stream()
+                .map(race -> {
+                    String url = String.format(BASE_URL, race.url());
+                    return (Callable<DNDRaceDetailDTO>) () -> dndClient.fetchRaceDetails(url);
+                })
+                .toList();
+
+        return ThreadUtil.fetchConcurrently(tasks);
     }
 
     @Override
     public List<DNDSubraceDetailDTO> fetchAllSubracesWithDetails()
     {
         DNDSubraceResultDTO resultDTO = dndClient.fetchAllSubraces(ALL_SUBRACES_URL);
-        List<DNDSubraceDetailDTO> detailDTOs = new ArrayList<>();
 
-        resultDTO.subraces().forEach(subrace ->
-        {
-            String url = String.format(BASE_URL, subrace.url());
-            detailDTOs.add(dndClient.fetchSubraceDetails(url));
-        });
-        return detailDTOs;
+        List<Callable<DNDSubraceDetailDTO>> tasks = resultDTO.subraces().stream()
+                .map(subrace -> {
+                    String url = String.format(BASE_URL, subrace.url());
+                    return (Callable<DNDSubraceDetailDTO>) () -> dndClient.fetchSubraceDetails(url);
+                })
+                .toList();
+
+        return ThreadUtil.fetchConcurrently(tasks);
     }
 
     @Override
     public List<DNDTraitDetailDTO> fetchAllTraitsWithDetails()
     {
         DNDTraitResultDTO resultDTO = dndClient.fetchAllTraits(ALL_TRAITS_URL);
-        List<DNDTraitDetailDTO> detailDTOs = new ArrayList<>();
 
-        resultDTO.traits().forEach(trait ->
-        {
-            String url = String.format(BASE_URL, trait.url());
-            detailDTOs.add(dndClient.fetchTraitDetails(url));
-        });
-        return detailDTOs;
+        List<Callable<DNDTraitDetailDTO>> tasks = resultDTO.traits().stream()
+                .map(trait -> {
+                    String url = String.format(BASE_URL, trait.url());
+                    return (Callable<DNDTraitDetailDTO>) () -> dndClient.fetchTraitDetails(url);
+                })
+                .toList();
+
+        return ThreadUtil.fetchConcurrently(tasks);
     }
 
     @Override
     public List<DNDLanguageDetailDTO> fetchAllLanguagesWithDetails()
     {
         DNDLanguageResultDTO resultDTO = dndClient.fetchAllLanguages(ALL_LANGUAGES_URL);
-        List<DNDLanguageDetailDTO> detailDTOs = new ArrayList<>();
 
-        resultDTO.languages().forEach(language ->
-        {
-            String url = String.format(BASE_URL, language.url());
-            detailDTOs.add(dndClient.fetchLanguageDetails(url));
-        });
-        return detailDTOs;
+        List<Callable<DNDLanguageDetailDTO>> tasks = resultDTO.languages().stream()
+                .map(language -> {
+                    String url = String.format(BASE_URL, language.url());
+                    return (Callable<DNDLanguageDetailDTO>) () -> dndClient.fetchLanguageDetails(url);
+                })
+                .toList();
+
+        return ThreadUtil.fetchConcurrently(tasks);
     }
 }
