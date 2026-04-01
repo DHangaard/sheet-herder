@@ -6,11 +6,13 @@ import app.persistence.entities.reference.Trait;
 import app.exceptions.DatabaseException;
 import app.utils.ContentHashing;
 import jakarta.persistence.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class TraitDAO implements IReferenceDAO<Trait>
 {
     private final EntityManagerFactory emf;
@@ -180,6 +182,7 @@ public class TraitDAO implements IReferenceDAO<Trait>
                 em.getTransaction().begin();
                 List<Trait> result = processSync(em, traits);
                 em.getTransaction().commit();
+                log.info("Trait sync complete — {} records processed", result.size());
                 return result;
             }
             catch (PersistenceException e)
@@ -256,12 +259,15 @@ public class TraitDAO implements IReferenceDAO<Trait>
         if (existing == null)
         {
             em.persist(incoming);
+            log.info("New trait persisted: {}", incoming.getName());
             return incoming;
         }
         if (incoming.getContentHash().equals(existing.getContentHash()))
         {
+            log.debug("Skipped unchanged trait: {}", existing.getName());
             return existing;
         }
+        log.info("Trait updated: {}", existing.getName());
         return applyUpdate(existing, incoming);
     }
 

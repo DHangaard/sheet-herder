@@ -8,11 +8,13 @@ import app.exceptions.DatabaseException;
 import app.persistence.entities.reference.Trait;
 import app.utils.ContentHashing;
 import jakarta.persistence.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class SubraceDAO implements IReferenceDAO<Subrace>
 {
     private final EntityManagerFactory emf;
@@ -204,6 +206,7 @@ public class SubraceDAO implements IReferenceDAO<Subrace>
                 em.getTransaction().begin();
                 List<Subrace> result = processSync(em, subraces);
                 em.getTransaction().commit();
+                log.info("Subrace sync complete — {} records processed", result.size());
                 return result;
             }
             catch (PersistenceException e)
@@ -280,12 +283,15 @@ public class SubraceDAO implements IReferenceDAO<Subrace>
         if (existing == null)
         {
             em.persist(incoming);
+            log.info("New subrace persisted: {}", incoming.getName());
             return incoming;
         }
         if (incoming.getContentHash().equals(existing.getContentHash()))
         {
+            log.debug("Skipped unchanged subrace: {}", existing.getName());
             return existing;
         }
+        log.info("Subrace updated: {}", existing.getName());
         return applyUpdate(existing, incoming);
     }
 

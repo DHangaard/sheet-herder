@@ -6,11 +6,13 @@ import app.persistence.entities.reference.Race;
 import app.exceptions.DatabaseException;
 import app.utils.ContentHashing;
 import jakarta.persistence.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class RaceDAO implements IReferenceDAO<Race>
 {
     private final EntityManagerFactory emf;
@@ -193,6 +195,7 @@ public class RaceDAO implements IReferenceDAO<Race>
                 em.getTransaction().begin();
                 List<Race> result = processSync(em, races);
                 em.getTransaction().commit();
+                log.info("Race sync complete — {} records processed", result.size());
                 return result;
             }
             catch (PersistenceException e)
@@ -269,12 +272,15 @@ public class RaceDAO implements IReferenceDAO<Race>
         if (existing == null)
         {
             em.persist(incoming);
+            log.info("New race persisted: {}", incoming.getName());
             return incoming;
         }
         if (incoming.getContentHash().equals(existing.getContentHash()))
         {
+            log.debug("Skipped unchanged race: {}", existing.getName());
             return existing;
         }
+        log.info("Race updated: {}", existing.getName());
         return applyUpdate(existing, incoming);
     }
 

@@ -6,11 +6,13 @@ import app.persistence.entities.reference.Language;
 import app.exceptions.DatabaseException;
 import app.utils.ContentHashing;
 import jakarta.persistence.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class LanguageDAO implements IReferenceDAO<Language>
 {
     private final EntityManagerFactory emf;
@@ -183,6 +185,7 @@ public class LanguageDAO implements IReferenceDAO<Language>
                 em.getTransaction().begin();
                 List<Language> result = processSync(em, languages);
                 em.getTransaction().commit();
+                log.info("Language sync complete — {} records processed", result.size());
                 return result;
             }
             catch (PersistenceException e)
@@ -259,12 +262,15 @@ public class LanguageDAO implements IReferenceDAO<Language>
         if (existing == null)
         {
             em.persist(incoming);
+            log.info("New language persisted: {}", incoming.getName());
             return incoming;
         }
         if (incoming.getContentHash().equals(existing.getContentHash()))
         {
+            log.debug("Skipped unchanged language: {}", existing.getName());
             return existing;
         }
+        log.info("Language updated: {}", existing.getName());
         return applyUpdate(existing, incoming);
     }
 
