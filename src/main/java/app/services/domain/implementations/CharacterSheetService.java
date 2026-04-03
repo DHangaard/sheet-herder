@@ -4,7 +4,7 @@ import app.dtos.domain.CharacterSheetDTO;
 import app.dtos.domain.CreateCharacterSheetDTO;
 import app.dtos.domain.UpdateCharacterSheetDTO;
 import app.exceptions.ConflictException;
-import app.exceptions.UnauthorizedException;
+import app.exceptions.ForbiddenException;
 import app.exceptions.ValidationException;
 import app.mappers.DTOMapper;
 import app.persistence.daos.domain.interfaces.ICharacterSheetDAO;
@@ -189,7 +189,7 @@ public class CharacterSheetService implements ICharacterSheetService
     {
         if (!characterSheet.getUser().equals(user))
         {
-            throw new UnauthorizedException("Only the owning user is allowed to alter character sheet");
+            throw new ForbiddenException("Only the owning user is allowed to alter character sheet");
         }
     }
 
