@@ -10,6 +10,7 @@ import io.javalin.Javalin;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.HttpStatus;
 import io.javalin.json.JavalinJackson;
+import jakarta.persistence.EntityManagerFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -38,6 +39,24 @@ public class ApplicationConfig
         return app;
     }
 
+    public static Javalin startServer(int port, EntityManagerFactory emf)
+    {
+        JWTUtil.validate();
+        DIContainer diContainer = DIContainer.getTestInstance(emf);
+        Routes routes = buildRoutes(diContainer);
+
+        Javalin app = Javalin.create(config ->
+        {
+            configureRoutes(config, routes);
+            configureSecurity(config, diContainer);
+            configureExceptions(config);
+            configureJackson(config, diContainer);
+            configureLogger(config);
+        }).start(port);
+
+        return app;
+    }
+
     public static void stopServer(Javalin app)
     {
         log.info("SheetHerder shutting down");
@@ -52,6 +71,7 @@ public class ApplicationConfig
                 new RaceRoute(diContainer.getRaceController()),
                 new SubraceRoute(diContainer.getSubraceController()),
                 new SecurityRoute(diContainer.getSecurityController()),
+                new UserRoute(diContainer.getUserController()),
                 new CharacterSheetRoute(diContainer.getCharacterSheetController())
         );
     }
