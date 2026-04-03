@@ -3,7 +3,6 @@ package app.persistence.entities.domain;
 import app.security.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
