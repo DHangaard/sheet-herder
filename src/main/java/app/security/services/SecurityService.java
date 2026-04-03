@@ -4,7 +4,7 @@ import app.exceptions.ConflictException;
 import app.exceptions.UnauthorizedException;
 import app.mappers.DTOMapper;
 import app.persistence.entities.domain.User;
-import app.security.daos.IUserDAO;
+import app.persistence.daos.domain.interfaces.IUserDAO;
 import app.security.dtos.LoginRequestDTO;
 import app.security.dtos.RegisterRequestDTO;
 import app.security.dtos.UserDTO;
