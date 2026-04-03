@@ -1,7 +1,5 @@
-package app.config;
+package app.config.hibernate;
 
-import app.config.hibernate.HibernateBaseProperties;
-import app.config.hibernate.HibernateEmfBuilder;
 import jakarta.persistence.EntityManagerFactory;
 
 import java.util.Properties;
@@ -25,8 +23,6 @@ public final class HibernateTestConfig {
 
     private static Properties buildProps() {
         Properties props = HibernateBaseProperties.createBase();
-
-        // Testcontainers JDBC driver
         props.put("hibernate.connection.driver_class", "org.testcontainers.jdbc.ContainerDatabaseDriver");
         props.put("hibernate.connection.url", "jdbc:tc:postgresql:16.2:///test_db");
 
