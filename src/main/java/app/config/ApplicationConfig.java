@@ -4,10 +4,12 @@ import app.exceptions.ApiException;
 import app.routes.*;
 import app.security.enums.Role;
 import app.security.routes.SecurityRoute;
+import app.security.utils.JWTUtil;
 import app.utils.ExecutionTimer;
 import io.javalin.Javalin;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.HttpStatus;
+import io.javalin.json.JavalinJackson;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
@@ -18,6 +20,7 @@ public class ApplicationConfig
     public static Javalin startServer(int port)
     {
         ExecutionTimer.start();
+        JWTUtil.validate();
         DIContainer diContainer = DIContainer.getInstance();
         DataSeeder.seed(diContainer);
         Routes routes = buildRoutes(diContainer);
@@ -27,6 +30,7 @@ public class ApplicationConfig
             configureRoutes(config, routes);
             configureSecurity(config, diContainer);
             configureExceptions(config);
+            configureJackson(config, diContainer);
             configureLogger(config);
         }).start(port);
 
@@ -47,7 +51,8 @@ public class ApplicationConfig
                 new TraitRoute(diContainer.getTraitController()),
                 new RaceRoute(diContainer.getRaceController()),
                 new SubraceRoute(diContainer.getSubraceController()),
-                new SecurityRoute(diContainer.getSecurityController())
+                new SecurityRoute(diContainer.getSecurityController()),
+                new CharacterSheetRoute(diContainer.getCharacterSheetController())
         );
     }
 
@@ -81,12 +86,18 @@ public class ApplicationConfig
     private static void configureLogger(JavalinConfig config)
     {
         config.requestLogger.http((ctx, ms) ->
-                log.info("{} {} - {} ({}ms)",
-                        ctx.method(),
-                        ctx.path(),
-                        ctx.status(),
-                        ms.longValue()
-                )
-        );
+        {
+            if (ctx.status().getCode() >= 500)
+                log.error("{} {} - {} ({}ms)", ctx.method(), ctx.path(), ctx.status(), ms.longValue());
+            else if (ctx.status().getCode() >= 400)
+                log.warn("{} {} - {} ({}ms)", ctx.method(), ctx.path(), ctx.status(), ms.longValue());
+            else
+                log.info("{} {} - {} ({}ms)", ctx.method(), ctx.path(), ctx.status(), ms.longValue());
+        });
+    }
+
+    private static void configureJackson(JavalinConfig config, DIContainer diContainer)
+    {
+        config.jsonMapper(new JavalinJackson(diContainer.getObjectMapper(), false));
     }
 }
