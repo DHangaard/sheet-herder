@@ -1,4 +1,4 @@
-package app.services.reference;
+package app.services.reference.interfaces;
 
 import java.util.List;
 import java.util.Optional;

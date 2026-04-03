@@ -1,7 +1,8 @@
-package app.services.reference;
+package app.services.reference.implementations;
 
 import app.dtos.dnd.*;
 import app.integrations.IDNDClient;
+import app.services.reference.interfaces.IDNDFetchingService;
 import app.utils.ThreadUtil;
 
 import java.util.List;

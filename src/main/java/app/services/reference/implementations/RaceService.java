@@ -1,4 +1,4 @@
-package app.services.reference;
+package app.services.reference.implementations;
 
 import app.dtos.reference.RaceDTO;
 import app.dtos.dnd.DNDRaceDetailDTO;
@@ -7,7 +7,8 @@ import app.persistence.entities.reference.Race;
 import app.persistence.entities.reference.Trait;
 import app.enums.Size;
 import app.mappers.DTOMapper;
-import app.persistence.daos.interfaces.IReferenceDAO;
+import app.persistence.daos.reference.interfaces.IReferenceDAO;
+import app.services.reference.interfaces.IReferenceDataService;
 import app.utils.ContentHashing;
 import app.utils.Validator;
 

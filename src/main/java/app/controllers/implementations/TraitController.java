@@ -1,8 +1,9 @@
-package app.controllers;
+package app.controllers.implementations;
 
+import app.controllers.interfaces.IReferenceController;
 import app.dtos.dnd.DNDTraitDetailDTO;
 import app.dtos.reference.TraitDTO;
-import app.services.reference.IReferenceDataService;
+import app.services.reference.interfaces.IReferenceDataService;
 import io.javalin.http.Context;
 
 public class TraitController implements IReferenceController

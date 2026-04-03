@@ -1,11 +1,9 @@
-package app.persistence.daos.implementations;
+package app.persistence.daos.reference.implementations;
 
 import app.exceptions.NotFoundException;
-import app.persistence.daos.interfaces.IReferenceDAO;
-import app.persistence.entities.reference.Race;
+import app.persistence.daos.reference.interfaces.IReferenceDAO;
 import app.persistence.entities.reference.Subrace;
 import app.exceptions.DatabaseException;
-import app.persistence.entities.reference.Trait;
 import app.utils.ContentHashing;
 import jakarta.persistence.*;
 import lombok.extern.slf4j.Slf4j;
@@ -66,30 +64,6 @@ public class SubraceDAO implements IReferenceDAO<Subrace>
         catch (PersistenceException e)
         {
             throw new DatabaseException("Failed to find Subrace with id: " + id, e);
-        }
-    }
-
-    @Override
-    public List<Subrace> getAll()
-    {
-        try (EntityManager em = emf.createEntityManager())
-        {
-            try
-            {
-                TypedQuery<Subrace> query = em.createQuery("""
-                        SELECT DISTINCT s
-                        FROM Subrace s
-                        LEFT JOIN FETCH s.race r
-                        LEFT JOIN FETCH r.languages
-                        LEFT JOIN FETCH r.traits
-                        LEFT JOIN FETCH s.traits
-                        """, Subrace.class);
-                return query.getResultList();
-            }
-            catch (PersistenceException e)
-            {
-                throw new DatabaseException("Failed to fetch subraces", e);
-            }
         }
     }
 
@@ -191,6 +165,30 @@ public class SubraceDAO implements IReferenceDAO<Subrace>
             catch (PersistenceException e)
             {
                 throw new DatabaseException("Failed to fetch subraces by names", e);
+            }
+        }
+    }
+
+    @Override
+    public List<Subrace> getAll()
+    {
+        try (EntityManager em = emf.createEntityManager())
+        {
+            try
+            {
+                return em.createQuery("""
+                                SELECT DISTINCT s
+                                FROM Subrace s
+                                LEFT JOIN FETCH s.race r
+                                LEFT JOIN FETCH r.languages
+                                LEFT JOIN FETCH r.traits
+                                LEFT JOIN FETCH s.traits
+                                """, Subrace.class)
+                        .getResultList();
+            }
+            catch (PersistenceException e)
+            {
+                throw new DatabaseException("Failed to fetch subraces", e);
             }
         }
     }

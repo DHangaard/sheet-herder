@@ -1,8 +1,9 @@
-package app.controllers;
+package app.controllers.implementations;
 
+import app.controllers.interfaces.IReferenceController;
 import app.dtos.dnd.DNDSubraceDetailDTO;
 import app.dtos.reference.SubraceDTO;
-import app.services.reference.IReferenceDataService;
+import app.services.reference.interfaces.IReferenceDataService;
 import io.javalin.http.Context;
 
 public class SubraceController implements IReferenceController

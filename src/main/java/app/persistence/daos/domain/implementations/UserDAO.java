@@ -1,6 +1,7 @@
-package app.security.daos;
+package app.persistence.daos.domain.implementations;
 
 import app.exceptions.DatabaseException;
+import app.persistence.daos.domain.interfaces.IUserDAO;
 import app.persistence.entities.domain.User;
 import app.security.enums.Role;
 import app.exceptions.ConflictException;
@@ -41,26 +42,6 @@ public class UserDAO implements IUserDAO
     }
 
     @Override
-    public Optional<User> getByEmail(String email)
-    {
-        try (EntityManager em = emf.createEntityManager())
-        {
-            return em.createQuery("""
-                            SELECT u
-                            FROM User u
-                            WHERE LOWER(u.email) = LOWER(:email) 
-                            """, User.class)
-                    .setParameter("email", email)
-                    .getResultStream()
-                    .findFirst();
-        }
-        catch (PersistenceException e)
-        {
-            throw new DatabaseException("Failed to find user with email: " + email, e);
-        }
-    }
-
-    @Override
     public User getById(Long id)
     {
         try (EntityManager em = emf.createEntityManager())
@@ -92,6 +73,68 @@ public class UserDAO implements IUserDAO
                 rollback(em);
                 throw new DatabaseException("Failed to update user", e);
             }
+        }
+    }
+
+    @Override
+    public Long delete(Long id)
+    {
+        try (EntityManager em = emf.createEntityManager())
+        {
+            try
+            {
+                em.getTransaction().begin();
+                User foundUser = em.find(User.class, id);
+                validateNull(foundUser, id);
+                em.remove(foundUser);
+                em.getTransaction().commit();
+                return foundUser.getId();
+            }
+            catch (PersistenceException e)
+            {
+                rollback(em);
+                throw new DatabaseException("Failed to delete user with id: " + id, e);
+            }
+        }
+    }
+
+    @Override
+    public Optional<User> getByEmail(String email)
+    {
+        try (EntityManager em = emf.createEntityManager())
+        {
+            return em.createQuery("""
+                            SELECT u
+                            FROM User u
+                            WHERE LOWER(u.email) = LOWER(:email) 
+                            """, User.class)
+                    .setParameter("email", email)
+                    .getResultStream()
+                    .findFirst();
+        }
+        catch (PersistenceException e)
+        {
+            throw new DatabaseException("Failed to find user with email: " + email, e);
+        }
+    }
+
+    @Override
+    public Optional<User> getByUsername(String username)
+    {
+        try (EntityManager em = emf.createEntityManager())
+        {
+            return em.createQuery("""
+                            SELECT u
+                            FROM User u
+                            WHERE LOWER(u.username) = LOWER(:username) 
+                            """, User.class)
+                    .setParameter("username", username)
+                    .getResultStream()
+                    .findFirst();
+        }
+        catch (PersistenceException e)
+        {
+            throw new DatabaseException("Failed to find user with username: " + username, e);
         }
     }
 
@@ -145,28 +188,6 @@ public class UserDAO implements IUserDAO
             {
                 rollback(em);
                 throw new DatabaseException("Failed to remove role \"" + role + "\" user", e);
-            }
-        }
-    }
-
-    @Override
-    public Long delete(Long id)
-    {
-        try (EntityManager em = emf.createEntityManager())
-        {
-            try
-            {
-                em.getTransaction().begin();
-                User foundUser = em.find(User.class, id);
-                validateNull(foundUser, id);
-                em.remove(foundUser);
-                em.getTransaction().commit();
-                return foundUser.getId();
-            }
-            catch (PersistenceException e)
-            {
-                rollback(em);
-                throw new DatabaseException("Failed to delete user with id: " + id, e);
             }
         }
     }

@@ -1,7 +1,7 @@
-package app.persistence.daos.implementations;
+package app.persistence.daos.reference.implementations;
 
 import app.exceptions.NotFoundException;
-import app.persistence.daos.interfaces.IReferenceDAO;
+import app.persistence.daos.reference.interfaces.IReferenceDAO;
 import app.persistence.entities.reference.Race;
 import app.exceptions.DatabaseException;
 import app.utils.ContentHashing;
@@ -62,28 +62,6 @@ public class RaceDAO implements IReferenceDAO<Race>
         catch (PersistenceException e)
         {
             throw new DatabaseException("Failed to find race with name: " + id, e);
-        }
-    }
-
-    @Override
-    public List<Race> getAll()
-    {
-        try (EntityManager em = emf.createEntityManager())
-        {
-            try
-            {
-                TypedQuery<Race> query = em.createQuery("""
-                        SELECT DISTINCT r
-                        FROM Race r
-                        LEFT JOIN FETCH r.languages
-                        LEFT JOIN FETCH r.traits
-                        """, Race.class);
-                return query.getResultList();
-            }
-            catch (PersistenceException e)
-            {
-                throw new DatabaseException("Failed to fetch races", e);
-            }
         }
     }
 
@@ -180,6 +158,28 @@ public class RaceDAO implements IReferenceDAO<Race>
             catch (PersistenceException e)
             {
                 throw new DatabaseException("Failed to fetch races by names", e);
+            }
+        }
+    }
+
+    @Override
+    public List<Race> getAll()
+    {
+        try (EntityManager em = emf.createEntityManager())
+        {
+            try
+            {
+                return em.createQuery("""
+                                SELECT DISTINCT r
+                                FROM Race r
+                                LEFT JOIN FETCH r.languages
+                                LEFT JOIN FETCH r.traits
+                                """, Race.class)
+                        .getResultList();
+            }
+            catch (PersistenceException e)
+            {
+                throw new DatabaseException("Failed to fetch races", e);
             }
         }
     }

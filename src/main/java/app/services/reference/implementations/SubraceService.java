@@ -1,4 +1,4 @@
-package app.services.reference;
+package app.services.reference.implementations;
 
 import app.dtos.reference.SubraceDTO;
 import app.dtos.dnd.DNDSubraceDetailDTO;
@@ -6,14 +6,15 @@ import app.persistence.entities.reference.Race;
 import app.persistence.entities.reference.Subrace;
 import app.persistence.entities.reference.Trait;
 import app.mappers.DTOMapper;
-import app.persistence.daos.interfaces.IReferenceDAO;
+import app.persistence.daos.reference.interfaces.IReferenceDAO;
+import app.services.reference.interfaces.IReferenceDataService;
 import app.utils.ContentHashing;
 import app.utils.Validator;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SubraceService implements IReferenceDataService <DNDSubraceDetailDTO, SubraceDTO>
+public class SubraceService implements IReferenceDataService<DNDSubraceDetailDTO, SubraceDTO>
 {
     private final IReferenceDAO<Subrace> subraceDAO;
     private final IReferenceDAO<Race> raceDAO;

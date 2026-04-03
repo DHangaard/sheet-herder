@@ -1,7 +1,7 @@
-package app.persistence.daos.implementations;
+package app.persistence.daos.reference.implementations;
 
 import app.exceptions.NotFoundException;
-import app.persistence.daos.interfaces.IReferenceDAO;
+import app.persistence.daos.reference.interfaces.IReferenceDAO;
 import app.persistence.entities.reference.Language;
 import app.exceptions.DatabaseException;
 import app.utils.ContentHashing;
@@ -57,26 +57,6 @@ public class LanguageDAO implements IReferenceDAO<Language>
         catch (PersistenceException e)
         {
             throw new DatabaseException("Failed to find Language with id: " + id, e);
-        }
-    }
-
-    @Override
-    public List<Language> getAll()
-    {
-        try (EntityManager em = emf.createEntityManager())
-        {
-            try
-            {
-                TypedQuery<Language> query = em.createQuery("""
-                        SELECT l
-                        FROM Language l
-                        """, Language.class);
-                return query.getResultList();
-            }
-            catch (PersistenceException e)
-            {
-                throw new DatabaseException("Failed to fetch languages", e);
-            }
         }
     }
 
@@ -170,6 +150,26 @@ public class LanguageDAO implements IReferenceDAO<Language>
             catch (PersistenceException e)
             {
                 throw new DatabaseException("Failed to fetch languages by names", e);
+            }
+        }
+    }
+
+    @Override
+    public List<Language> getAll()
+    {
+        try (EntityManager em = emf.createEntityManager())
+        {
+            try
+            {
+                return em.createQuery("""
+                                SELECT l
+                                FROM Language l
+                                """, Language.class)
+                        .getResultList();
+            }
+            catch (PersistenceException e)
+            {
+                throw new DatabaseException("Failed to fetch languages", e);
             }
         }
     }

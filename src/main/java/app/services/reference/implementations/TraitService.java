@@ -1,10 +1,11 @@
-package app.services.reference;
+package app.services.reference.implementations;
 
 import app.dtos.reference.TraitDTO;
 import app.dtos.dnd.DNDTraitDetailDTO;
 import app.persistence.entities.reference.Trait;
 import app.mappers.DTOMapper;
-import app.persistence.daos.interfaces.IReferenceDAO;
+import app.persistence.daos.reference.interfaces.IReferenceDAO;
+import app.services.reference.interfaces.IReferenceDataService;
 import app.utils.ContentHashing;
 import app.utils.Validator;
 

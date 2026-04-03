@@ -1,7 +1,7 @@
-package app.persistence.daos.implementations;
+package app.persistence.daos.reference.implementations;
 
 import app.exceptions.NotFoundException;
-import app.persistence.daos.interfaces.IReferenceDAO;
+import app.persistence.daos.reference.interfaces.IReferenceDAO;
 import app.persistence.entities.reference.Trait;
 import app.exceptions.DatabaseException;
 import app.utils.ContentHashing;
@@ -57,23 +57,6 @@ public class TraitDAO implements IReferenceDAO<Trait>
         catch (PersistenceException e)
         {
             throw new DatabaseException("Failed to find Trait with id: " + id, e);
-        }
-    }
-
-    @Override
-    public List<Trait> getAll()
-    {
-        try (EntityManager em = emf.createEntityManager())
-        {
-            try
-            {
-                TypedQuery<Trait> query = em.createQuery("SELECT t FROM Trait t", Trait.class);
-                return query.getResultList();
-            }
-            catch (PersistenceException e)
-            {
-                throw new DatabaseException("Failed to fetch traits", e);
-            }
         }
     }
 
@@ -167,6 +150,26 @@ public class TraitDAO implements IReferenceDAO<Trait>
             catch (PersistenceException e)
             {
                 throw new DatabaseException("Failed to fetch traits by names", e);
+            }
+        }
+    }
+
+    @Override
+    public List<Trait> getAll()
+    {
+        try (EntityManager em = emf.createEntityManager())
+        {
+            try
+            {
+                return em.createQuery("""
+                                SELECT t
+                                FROM Trait t
+                                """, Trait.class)
+                        .getResultList();
+            }
+            catch (PersistenceException e)
+            {
+                throw new DatabaseException("Failed to fetch traits", e);
             }
         }
     }
