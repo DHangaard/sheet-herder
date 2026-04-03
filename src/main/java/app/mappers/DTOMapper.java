@@ -1,6 +1,7 @@
 package app.mappers;
 
 import app.dtos.domain.CharacterSheetDTO;
+import app.dtos.domain.UserDTO;
 import app.dtos.reference.LanguageDTO;
 import app.dtos.reference.RaceDTO;
 import app.dtos.reference.SubraceDTO;
@@ -13,7 +14,7 @@ import app.persistence.entities.reference.Race;
 import app.persistence.entities.reference.Subrace;
 import app.persistence.entities.reference.Trait;
 import app.enums.Ability;
-import app.security.dtos.UserDTO;
+import app.security.dtos.UserSecurityDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -81,11 +82,20 @@ public class DTOMapper
                 ));
     }
 
-    public static UserDTO userToDTO(User user)
+    public static UserSecurityDTO userToUserSecurityDTO(User user)
     {
-        return new UserDTO(
+        return new UserSecurityDTO(
+                user.getId(),
                 user.getUsername(),
                 user.getRoles()
+        );
+    }
+
+    public static UserDTO userToUserDTO(User user)
+    {
+        return new UserDTO(
+                user.getEmail(),
+                user.getUsername()
         );
     }
 
