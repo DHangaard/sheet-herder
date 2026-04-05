@@ -49,8 +49,9 @@ public class CharacterSheetController implements ICharacterSheetController
     public void update(Context ctx)
     {
         User user = resolveUser(ctx);
+        Long id = Long.parseLong(ctx.pathParam("id"));
         UpdateCharacterSheetDTO updateCharacterSheetDTO = ctx.bodyAsClass(UpdateCharacterSheetDTO.class);
-        CharacterSheetDTO characterSheetDTO = characterSheetService.update(user, updateCharacterSheetDTO);
+        CharacterSheetDTO characterSheetDTO = characterSheetService.update(user, id, updateCharacterSheetDTO);
         ctx.status(HttpStatus.OK).json(characterSheetDTO);
     }
 
@@ -64,10 +65,10 @@ public class CharacterSheetController implements ICharacterSheetController
     }
 
     @Override
-    public void findAllByUser(Context ctx)
+    public void getAllByUser(Context ctx)
     {
         User user = resolveUser(ctx);
-        List<CharacterSheetDTO> characterSheetDTOs = characterSheetService.findAllByUser(user);
+        List<CharacterSheetDTO> characterSheetDTOs = characterSheetService.getAllByUser(user);
         ctx.status(HttpStatus.OK).json(characterSheetDTOs);
     }
 

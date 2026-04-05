@@ -8,5 +8,5 @@ public interface ICharacterSheetController
     void getById(Context ctx);
     void update(Context ctx);
     void delete(Context ctx);
-    void findAllByUser(Context ctx);
+    void getAllByUser(Context ctx);
 }
