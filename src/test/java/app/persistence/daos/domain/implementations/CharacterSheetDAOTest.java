@@ -43,150 +43,175 @@ class CharacterSheetDAOTest
         emf.close();
     }
 
-    @Test
-    @DisplayName("Create - Should persist character sheet, normalize name and set timestamps")
-    void create()
+    @Nested
+    @DisplayName("Create")
+    class Create
     {
-        User john = (User) seeded.get("john");
-        CharacterSheet newSheet = new CharacterSheet(john, " Merlin ", null, null, Set.of(), Map.of());
+        @Test
+        @DisplayName("Should persist character sheet, normalize name and set timestamps")
+        void create()
+        {
+            User john = (User) seeded.get("john");
+            CharacterSheet newSheet = new CharacterSheet(john, " Merlin ", null, null, Set.of(), Map.of());
 
-        CharacterSheet result = characterSheetDAO.create(newSheet);
+            CharacterSheet result = characterSheetDAO.create(newSheet);
 
-        assertThat(result, notNullValue());
-        assertThat(result.getId(), notNullValue());
-        assertThat(result.getUser(), notNullValue());
-        assertThat(result.getUser().getId(), equalTo(john.getId()));
-        assertThat(result.getName(), equalTo("Merlin"));
-        assertThat(result.getCreatedAt(), notNullValue());
-        assertThat(result.getUpdatedAt(), notNullValue());
+            assertThat(result, notNullValue());
+            assertThat(result.getId(), notNullValue());
+            assertThat(result.getUser(), notNullValue());
+            assertThat(result.getUser().getId(), equalTo(john.getId()));
+            assertThat(result.getName(), equalTo("Merlin"));
+            assertThat(result.getCreatedAt(), notNullValue());
+            assertThat(result.getUpdatedAt(), notNullValue());
+        }
+
+        @Test
+        @DisplayName("Should throw exception on duplicate name for same user")
+        void createDuplicateName()
+        {
+            User john = (User) seeded.get("john");
+            CharacterSheet duplicate = new CharacterSheet(john, "Aragorn", null, null, Set.of(), Map.of());
+
+            assertThrows(DatabaseException.class, () -> characterSheetDAO.create(duplicate));
+        }
     }
 
-    @Test
-    @DisplayName("Create - Should throw exception on duplicate name for same user")
-    void createDuplicateName()
+    @Nested
+    @DisplayName("GetById")
+    class GetById
     {
-        User john = (User) seeded.get("john");
-        CharacterSheet duplicate = new CharacterSheet(john, "Aragorn", null, null, Set.of(), Map.of());
+        @Test
+        @DisplayName("Should return correct character sheet by id")
+        void getById()
+        {
+            CharacterSheet johnSheet1 = (CharacterSheet) seeded.get("johnSheet1");
 
-        assertThrows(DatabaseException.class, () -> characterSheetDAO.create(duplicate));
+            CharacterSheet result = characterSheetDAO.getById(johnSheet1.getId());
+
+            assertThat(result, notNullValue());
+            assertThat(result.getId(), notNullValue());
+            assertThat(result.getId(), equalTo(johnSheet1.getId()));
+            assertThat(result.getUser(), notNullValue());
+            assertThat(result.getUser().getId(), equalTo(johnSheet1.getUser().getId()));
+            assertThat(result.getName(), equalTo(johnSheet1.getName()));
+            assertThat(result.getCreatedAt(), notNullValue());
+            assertThat(result.getUpdatedAt(), notNullValue());
+        }
+
+        @Test
+        @DisplayName("Should throw NotFoundException when id does not exist")
+        void getByIdNotFound()
+        {
+            assertThrows(NotFoundException.class, () -> characterSheetDAO.getById(999L));
+        }
     }
 
-    @Test
-    @DisplayName("GetById - Should return correct character sheet by id")
-    void getById()
+    @Nested
+    @DisplayName("Update")
+    class Update
     {
-        CharacterSheet johnSheet1 = (CharacterSheet) seeded.get("johnSheet1");
+        @Test
+        @DisplayName("Should persist updated (normalized) name and set new updatedAt timestamp")
+        void update()
+        {
+            CharacterSheet johnSheet1 = (CharacterSheet) seeded.get("johnSheet1");
+            johnSheet1.setName(" Strider ");
+            characterSheetDAO.update(johnSheet1);
 
-        CharacterSheet result = characterSheetDAO.getById(johnSheet1.getId());
+            CharacterSheet result = characterSheetDAO.getById(johnSheet1.getId());
 
-        assertThat(result, notNullValue());
-        assertThat(result.getId(), notNullValue());
-        assertThat(result.getId(), equalTo(johnSheet1.getId()));
-        assertThat(result.getUser(), notNullValue());
-        assertThat(result.getUser().getId(), equalTo(johnSheet1.getUser().getId()));
-        assertThat(result.getName(), equalTo(johnSheet1.getName()));
-        assertThat(result.getCreatedAt(), notNullValue());
-        assertThat(result.getUpdatedAt(), notNullValue());
+            assertThat(result, notNullValue());
+            assertThat(result.getId(), notNullValue());
+            assertThat(result.getId(), equalTo(johnSheet1.getId()));
+            assertThat(result.getUser(), notNullValue());
+            assertThat(result.getUser().getId(), equalTo(johnSheet1.getUser().getId()));
+            assertThat(result.getName(), equalTo("Strider"));
+            assertThat(result.getCreatedAt(), notNullValue());
+            assertThat(result.getUpdatedAt(), notNullValue());
+            assertThat(result.getUpdatedAt(), not(equalTo(result.getCreatedAt())));
+        }
+
+        @Test
+        @DisplayName("Should throw exception on duplicate name for same user")
+        void updateDuplicateName()
+        {
+            CharacterSheet johnSheet1 = (CharacterSheet) seeded.get("johnSheet1");
+
+            johnSheet1.setName("Legolas");
+
+            assertThrows(DatabaseException.class, () -> characterSheetDAO.update(johnSheet1));
+        }
     }
 
-    @Test
-    @DisplayName("GetById - Should throw NotFoundException when id does not exist")
-    void getByIdNotFound()
+    @Nested
+    @DisplayName("Delete")
+    class Delete
     {
-        assertThrows(NotFoundException.class, () -> characterSheetDAO.getById(999L));
+        @Test
+        @DisplayName("Should delete character sheet and throw when fetched afterwards")
+        void delete()
+        {
+            CharacterSheet johnSheet1 = (CharacterSheet) seeded.get("johnSheet1");
+
+            Long result = characterSheetDAO.delete(johnSheet1.getId());
+
+            assertThat(result, notNullValue());
+            assertThat(result, equalTo(johnSheet1.getId()));
+            assertThrows(NotFoundException.class, () -> characterSheetDAO.getById(result));
+        }
+
+        @Test
+        @DisplayName("Should throw NotFoundException when id does not exist")
+        void deleteNotFound()
+        {
+            assertThrows(NotFoundException.class, () -> characterSheetDAO.delete(999L));
+        }
     }
 
-    @Test
-    @DisplayName("Update - Should persist updated (normalized) name and set new updatedAt timestamp")
-    void update()
+    @Nested
+    @DisplayName("GetAllByUser")
+    class GetAllByUser
     {
-        CharacterSheet johnSheet1 = (CharacterSheet) seeded.get("johnSheet1");
-        johnSheet1.setName(" Strider ");
-        characterSheetDAO.update(johnSheet1);
+        @Test
+        @DisplayName("Should return only sheets belonging to the given user")
+        void getAllByUser()
+        {
+            User john = (User) seeded.get("john");
+            User morten = (User) seeded.get("morten");
+            CharacterSheet johnSheet1 = (CharacterSheet) seeded.get("johnSheet1");
+            CharacterSheet johnSheet2 = (CharacterSheet) seeded.get("johnSheet2");
+            CharacterSheet mortenSheet1 = (CharacterSheet) seeded.get("mortenSheet1");
 
-        CharacterSheet result = characterSheetDAO.getById(johnSheet1.getId());
+            List<CharacterSheet> johnResults = characterSheetDAO.getAllByUser(john);
+            List<CharacterSheet> mortenResults = characterSheetDAO.getAllByUser(morten);
 
-        assertThat(result, notNullValue());
-        assertThat(result.getId(), notNullValue());
-        assertThat(result.getId(), equalTo(johnSheet1.getId()));
-        assertThat(result.getUser(), notNullValue());
-        assertThat(result.getUser().getId(), equalTo(johnSheet1.getUser().getId()));
-        assertThat(result.getName(), equalTo("Strider"));
-        assertThat(result.getCreatedAt(), notNullValue());
-        assertThat(result.getUpdatedAt(), notNullValue());
-        assertThat(result.getUpdatedAt(), not(equalTo(result.getCreatedAt())));
-    }
+            assertThat(johnResults, notNullValue());
+            assertThat(johnResults, hasSize(2));
+            assertThat(johnResults, containsInAnyOrder(johnSheet1, johnSheet2));
+            assertThat(johnResults, not(hasItem(mortenSheet1)));
 
-    @Test
-    @DisplayName("Update - Should throw exception on duplicate name for same user")
-    void updateDuplicateName()
-    {
-        CharacterSheet johnSheet1 = (CharacterSheet) seeded.get("johnSheet1");
+            assertThat(mortenResults, notNullValue());
+            assertThat(mortenResults, hasSize(1));
+            assertThat(mortenResults, containsInAnyOrder(mortenSheet1));
+            assertThat(mortenResults, not(hasItems(johnSheet1, johnSheet2)));
+        }
 
-        johnSheet1.setName("Legolas");
+        @Test
+        @DisplayName("Should return empty list when user has no character sheets")
+        void getAllByUserEmpty()
+        {
+            User gary = (User) seeded.get("gary");
+            User morten = (User) seeded.get("morten");
+            characterSheetDAO.delete(((CharacterSheet) seeded.get("mortenSheet1")).getId());
 
-        assertThrows(DatabaseException.class, () -> characterSheetDAO.update(johnSheet1));
-    }
+            List<CharacterSheet> garyResults = characterSheetDAO.getAllByUser(gary);
+            List<CharacterSheet> mortenResults = characterSheetDAO.getAllByUser(morten);
 
-    @Test
-    @DisplayName("Delete - Should delete character sheet and throw when fetched afterwards")
-    void delete()
-    {
-        CharacterSheet johnSheet1 = (CharacterSheet) seeded.get("johnSheet1");
+            assertThat(garyResults, notNullValue());
+            assertThat(garyResults, hasSize(0));
 
-        Long result = characterSheetDAO.delete(johnSheet1.getId());
-
-        assertThat(result, notNullValue());
-        assertThat(result, equalTo(johnSheet1.getId()));
-        assertThrows(NotFoundException.class, () -> characterSheetDAO.getById(result));
-    }
-
-    @Test
-    @DisplayName("Delete - Should throw NotFoundException when id does not exist")
-    void deleteNotFound()
-    {
-        assertThrows(NotFoundException.class, () -> characterSheetDAO.delete(999L));
-    }
-
-    @Test
-    @DisplayName("FindAllByUser - Should return only sheets belonging to the given user")
-    void getAllByUser()
-    {
-        User john = (User) seeded.get("john");
-        User morten = (User) seeded.get("morten");
-        CharacterSheet johnSheet1 = (CharacterSheet) seeded.get("johnSheet1");
-        CharacterSheet johnSheet2 = (CharacterSheet) seeded.get("johnSheet2");
-        CharacterSheet mortenSheet1 = (CharacterSheet) seeded.get("mortenSheet1");
-
-        List<CharacterSheet> johnResults = characterSheetDAO.getAllByUser(john);
-        List<CharacterSheet> mortenResults = characterSheetDAO.getAllByUser(morten);
-
-        assertThat(johnResults, notNullValue());
-        assertThat(johnResults, hasSize(2));
-        assertThat(johnResults, containsInAnyOrder(johnSheet1, johnSheet2));
-        assertThat(johnResults, not(hasItem(mortenSheet1)));
-
-        assertThat(mortenResults, notNullValue());
-        assertThat(mortenResults, hasSize(1));
-        assertThat(mortenResults, containsInAnyOrder(mortenSheet1));
-        assertThat(mortenResults, not(hasItems(johnSheet1, johnSheet2)));
-    }
-
-    @Test
-    @DisplayName("FindAllByUser - Should return empty list when user has no character sheets")
-    void getAllByUserEmpty()
-    {
-        User gary = (User) seeded.get("gary");
-        User morten = (User) seeded.get("morten");
-        characterSheetDAO.delete(((CharacterSheet) seeded.get("mortenSheet1")).getId());
-
-        List<CharacterSheet> garyResults = characterSheetDAO.getAllByUser(gary);
-        List<CharacterSheet> mortenResults = characterSheetDAO.getAllByUser(morten);
-
-        assertThat(garyResults, notNullValue());
-        assertThat(garyResults, hasSize(0));
-
-        assertThat(mortenResults, notNullValue());
-        assertThat(mortenResults, hasSize(0));
+            assertThat(mortenResults, notNullValue());
+            assertThat(mortenResults, hasSize(0));
+        }
     }
 }
