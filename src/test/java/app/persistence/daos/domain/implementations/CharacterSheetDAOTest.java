@@ -38,7 +38,7 @@ class CharacterSheetDAOTest
     }
 
     @AfterAll
-    void shutdown()
+    void tearDown()
     {
         emf.close();
     }
@@ -122,7 +122,9 @@ class CharacterSheetDAOTest
     void updateDuplicateName()
     {
         CharacterSheet johnSheet1 = (CharacterSheet) seeded.get("johnSheet1");
+
         johnSheet1.setName("Legolas");
+
         assertThrows(DatabaseException.class, () -> characterSheetDAO.update(johnSheet1));
     }
 
@@ -148,7 +150,7 @@ class CharacterSheetDAOTest
 
     @Test
     @DisplayName("FindAllByUser - Should return only sheets belonging to the given user")
-    void findAllByUser()
+    void getAllByUser()
     {
         User john = (User) seeded.get("john");
         User morten = (User) seeded.get("morten");
@@ -156,8 +158,8 @@ class CharacterSheetDAOTest
         CharacterSheet johnSheet2 = (CharacterSheet) seeded.get("johnSheet2");
         CharacterSheet mortenSheet1 = (CharacterSheet) seeded.get("mortenSheet1");
 
-        List<CharacterSheet> johnResults = characterSheetDAO.findAllByUser(john);
-        List<CharacterSheet> mortenResults = characterSheetDAO.findAllByUser(morten);
+        List<CharacterSheet> johnResults = characterSheetDAO.getAllByUser(john);
+        List<CharacterSheet> mortenResults = characterSheetDAO.getAllByUser(morten);
 
         assertThat(johnResults, notNullValue());
         assertThat(johnResults, hasSize(2));
@@ -172,14 +174,19 @@ class CharacterSheetDAOTest
 
     @Test
     @DisplayName("FindAllByUser - Should return empty list when user has no character sheets")
-    void findAllByUserEmpty()
+    void getAllByUserEmpty()
     {
+        User gary = (User) seeded.get("gary");
         User morten = (User) seeded.get("morten");
         characterSheetDAO.delete(((CharacterSheet) seeded.get("mortenSheet1")).getId());
 
-        List<CharacterSheet> results = characterSheetDAO.findAllByUser(morten);
+        List<CharacterSheet> garyResults = characterSheetDAO.getAllByUser(gary);
+        List<CharacterSheet> mortenResults = characterSheetDAO.getAllByUser(morten);
 
-        assertThat(results, notNullValue());
-        assertThat(results, hasSize(0));
+        assertThat(garyResults, notNullValue());
+        assertThat(garyResults, hasSize(0));
+
+        assertThat(mortenResults, notNullValue());
+        assertThat(mortenResults, hasSize(0));
     }
 }
