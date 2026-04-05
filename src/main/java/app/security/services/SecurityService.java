@@ -29,10 +29,7 @@ public class SecurityService implements ISecurityService
         Validator.validEmail(request.email());
         Validator.validUsername(request.username());
         Validator.validPassword(request.password());
-
-        userDAO.getByEmail(request.email()).ifPresent(user -> {
-            throw new ConflictException("The chosen email is not available: " + request.email());
-        });
+        validateUnique(request.email(), request.username());
 
         String hashedPassword = PasswordUtil.hashPassword(request.password());
         User user = userDAO.create(new User(request.email(), request.username(), hashedPassword));
@@ -47,7 +44,8 @@ public class SecurityService implements ISecurityService
         Validator.validEmail(request.email());
         Validator.notNullOrBlank(request.password());
 
-        User user = userDAO.getByEmail(request.email()).orElseThrow(() -> {
+        User user = userDAO.getByEmail(request.email()).orElseThrow(() ->
+        {
             log.warn("Failed login attempt for: {}", request.email());
             return new UnauthorizedException("Invalid credentials");
         });
@@ -61,5 +59,20 @@ public class SecurityService implements ISecurityService
         String token = JWTUtil.createToken(user.getId(), user.getUsername(), user.getRoles());
         log.info("User logged in: {}", user.getEmail());
         return token;
+    }
+
+    private void validateUnique(String email, String username)
+    {
+        userDAO.getByEmail(email)
+                .ifPresent(user ->
+                {
+                    throw new ConflictException("The chosen email is not available: " + email);
+                });
+
+        userDAO.getByUsername(username)
+                .ifPresent(user ->
+                {
+                    throw new ConflictException("The chosen username is not available: " + username);
+                });
     }
 }
