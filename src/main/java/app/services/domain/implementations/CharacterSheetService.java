@@ -68,13 +68,14 @@ public class CharacterSheetService implements ICharacterSheetService
     }
 
     @Override
-    public CharacterSheetDTO update(User user, UpdateCharacterSheetDTO dto)
+    public CharacterSheetDTO update(User user, Long id, UpdateCharacterSheetDTO dto)
     {
         Validator.notNull(user);
         Validator.notNull(dto);
-        Validator.validId(dto.id());
-        validateUniqueName(user, dto.name(), dto.id());
-        CharacterSheet characterSheet = characterSheetDAO.getById(dto.id());
+        Validator.validId(id);
+        Validator.notBlank(dto.name());
+        validateUniqueName(user, dto.name(), id);
+        CharacterSheet characterSheet = characterSheetDAO.getById(id);
         validateOwnership(user, characterSheet);
         CharacterSheet updatedCharacterSheet = buildUpdatedCharacterSheet(characterSheet, dto);
 
@@ -93,10 +94,10 @@ public class CharacterSheetService implements ICharacterSheetService
     }
 
     @Override
-    public List<CharacterSheetDTO> findAllByUser(User user)
+    public List<CharacterSheetDTO> getAllByUser(User user)
     {
         Validator.notNull(user);
-        return characterSheetDAO.findAllByUser(user)
+        return characterSheetDAO.getAllByUser(user)
                 .stream()
                 .map(DTOMapper::characterSheetToDTO)
                 .toList();
@@ -195,7 +196,7 @@ public class CharacterSheetService implements ICharacterSheetService
 
     private void validateUniqueName(User user, String name)
     {
-        boolean nameExists = characterSheetDAO.findAllByUser(user)
+        boolean nameExists = characterSheetDAO.getAllByUser(user)
                 .stream()
                 .anyMatch(character -> character.getName().equalsIgnoreCase(name));
         if (nameExists)
@@ -206,7 +207,7 @@ public class CharacterSheetService implements ICharacterSheetService
 
     private void validateUniqueName(User user, String name, Long excludeId)
     {
-        boolean nameExists = characterSheetDAO.findAllByUser(user)
+        boolean nameExists = characterSheetDAO.getAllByUser(user)
                 .stream()
                 .filter(character -> !character.getId().equals(excludeId))
                 .anyMatch(character -> character.getName().equalsIgnoreCase(name));

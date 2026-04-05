@@ -43,12 +43,15 @@ public class TestPopulator
     {
         User john = new User("john@test.com", "john", PasswordUtil.hashPassword("Password_1", 4));
         User morten = new User("morten@test.com", "morten", PasswordUtil.hashPassword("Password_2", 4));
+        User gary = new User("gary@test.com", "gary", PasswordUtil.hashPassword("Password_3", 4));
 
         userDAO.create(john);
         userDAO.create(morten);
+        userDAO.create(gary);
 
         seeded.put("john", john);
         seeded.put("morten", morten);
+        seeded.put("gary", gary);
     }
 
     private void populateCharacterSheets()
