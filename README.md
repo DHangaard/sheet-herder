@@ -19,7 +19,7 @@ This project is a backend API for a _Table Top Roleplaying Game_ (TTRPG) compani
 
 Portfolio website: [dhangaard.dk](https://dhangaard.dk/)
 
-Project overview video: [video demo]([https://youtube.com](https://youtu.be/hG4LAV34rLU)
+Project overview video: [video demo](https://youtu.be/hG4LAV34rLU)
 
 Deployed application: [sheet-herder-api.dhangaard.dk](https://sheet-herder-api.dhangaard.dk/routes)
 
