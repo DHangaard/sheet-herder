@@ -163,7 +163,7 @@ public class DNDClient implements IDNDClient
     {
         return HttpRequest.newBuilder()
                 .uri(URI.create(url))
-                .header("accept", "applicatio/json")
+                .header("accept", "application/json")
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
     }
