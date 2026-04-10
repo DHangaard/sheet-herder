@@ -154,7 +154,6 @@ public class ReferenceDataPopulator
     {
         Race elf = (Race) seeded.get("elf");
         Trait keenSenses = (Trait) seeded.get("keenSenses");
-        Trait brave = (Trait) seeded.get("brave");
 
         Subrace highElf = subraceDAO.create(new Subrace(
                 "High Elf",
@@ -170,7 +169,7 @@ public class ReferenceDataPopulator
                 "As a wood elf, you have keen senses and intuition, and your fleet feet carry you quickly through your native forests.",
                 elf,
                 Map.of(Ability.WISDOM, 1),
-                Set.of(brave),
+                Set.of(keenSenses),
                 ContentHashing.sha256Hex("Wood Elf")
         ));
 
